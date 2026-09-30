@@ -1,7 +1,8 @@
 # OneTap: Smart Guided Troubleshooting Engine
 
 **Samsung PRISM GenAI Hackathon 2026 · Theme 02: Guided Troubleshooting**
-**Team Aloo Paratha · M S Ramaiah Institute of Technology (MSRIT), Bengaluru**
+**Team Aloo Paratha · M S Ramaiah Institute of Technology (MSRIT), Bengaluru**  
+Shourya Chouhan · Shreya Singh Chouhan · Yash Mittal · Vrunda Hatwar
 
 | Submission item | Link |
 |---|---|

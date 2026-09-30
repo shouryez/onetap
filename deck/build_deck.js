@@ -93,8 +93,10 @@ function stat(slide, x, y, w, value, label, sub, color = C.ink, vsize = 30) {
       txt(s, v, { x: 0.5 + i * 1.8, y: 3.6, w: 1.7, h: 0.42, fontFace: F.mono, fontSize: 20, bold: true, color: C.signal });
       txt(s, l, { x: 0.5 + i * 1.8, y: 4.02, w: 1.65, h: 0.4, fontSize: 9.5, color: C.darkMuted });
     });
+    txt(s, "Shourya Chouhan  ·  Shreya Singh Chouhan  ·  Yash Mittal  ·  Vrunda Hatwar",
+      { x: 0.5, y: 4.62, w: 6, h: 0.28, fontSize: 11.5, bold: true, color: C.darkText });
     txt(s, "Team Aloo Paratha  ·  M S Ramaiah Institute of Technology (MSRIT), Bengaluru  ·  Theme ID 02",
-      { x: 0.5, y: 4.95, w: 6, h: 0.3, fontSize: 10.5, color: C.darkText });
+      { x: 0.5, y: 4.95, w: 6, h: 0.3, fontSize: 10, color: C.darkMuted });
     // phone mock
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.55, y: 0.45, w: 2.85, h: 4.75, fill: { color: "0B0A09" }, line: { color: "2A2622", width: 1 }, rectRadius: 0.35 });
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.67, y: 0.57, w: 2.61, h: 4.51, fill: { color: C.paper }, line: { type: "none" }, rectRadius: 0.28 });
@@ -557,9 +559,10 @@ function stat(slide, x, y, w, value, label, sub, color = C.ink, vsize = 30) {
       txt(s, v, { x: 0.5 + i * 1.82, y: 2.95, w: 1.75, h: 0.5, fontFace: F.mono, fontSize: 21, bold: true, color: C.signal });
       txt(s, l, { x: 0.5 + i * 1.82, y: 3.45, w: 1.7, h: 0.4, fontSize: 9.5, color: C.darkMuted });
     });
-    txt(s, "Repository (tag PRISM_GENAI_HACKATHON_Y2026) and 5-minute demo video: links in the submission form.",
-      { x: 0.5, y: 4.3, w: 9, h: 0.3, fontSize: 11, color: C.darkText });
-    txt(s, "Team Aloo Paratha  ·  M S Ramaiah Institute of Technology (MSRIT), Bengaluru", { x: 0.5, y: 4.75, w: 9, h: 0.3, fontFace: F.mono, fontSize: 9.5, color: C.darkMuted });
+    txt(s, "github.com/shouryez/onetap  (tag PRISM_GENAI_HACKATHON_Y2026)   ·   demo: youtu.be/oJ5d5VblRTA",
+      { x: 0.5, y: 4.2, w: 9, h: 0.3, fontFace: F.mono, fontSize: 10.5, color: C.signal });
+    txt(s, "Shourya Chouhan  ·  Shreya Singh Chouhan  ·  Yash Mittal  ·  Vrunda Hatwar", { x: 0.5, y: 4.72, w: 9, h: 0.28, fontSize: 11, bold: true, color: C.darkText });
+    txt(s, "Team Aloo Paratha  ·  M S Ramaiah Institute of Technology (MSRIT), Bengaluru", { x: 0.5, y: 5.02, w: 9, h: 0.28, fontFace: F.mono, fontSize: 9, color: C.darkMuted });
     s.addNotes("To sum up: 100% contract compliance, around 10 ms for known problems, 3 seconds for new ones, 95.8% exact deeplinks, and a guard that cuts wrong cache answers from 44 to 10 percent. The code, metrics and demo video are linked in the submission. Thank you, and we're happy to take questions.");
   }
 

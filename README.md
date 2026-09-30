@@ -1,6 +1,15 @@
 # OneTap: Smart Guided Troubleshooting Engine
 
 **Samsung PRISM GenAI Hackathon 2026 · Theme 02: Guided Troubleshooting**
+**Team Aloo Paratha · M S Ramaiah Institute of Technology (MSRIT), Bengaluru**
+
+| Submission item | Link |
+|---|---|
+| 🎬 **Demo video (≈ 4.5 min)** | https://youtu.be/oJ5d5VblRTA |
+| 📊 **Presentation deck** | [MSRIT_AlooParatha_Submission_ppt.pptx](MSRIT_AlooParatha_Submission_ppt.pptx) |
+| 📈 **Metrics report** | [metrics.md](metrics.md) |
+| 📄 **Results on all provided scenarios** | [results.jsonl](results.jsonl) |
+| 🗒️ **Demo script** | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) |
 
 > Describe a phone problem in your own words and get a verified, ordered fix plan where every step is one tap away.
 > About 10 ms from the semantic cache, a few seconds on a cold path, and every step is grounded in the support knowledge base.

@@ -1,0 +1,144 @@
+{
+  "cache_entries": 20,
+  "cache_vectors": 239,
+  "ours_with_siis": {
+    "n_paraphrases": 97,
+    "hit_rate": 0.8247,
+    "correct_hit_rate": 0.8247,
+    "n_negatives": 50,
+    "false_hit_rate": 0.1,
+    "lookup_ms_p50": 6.84,
+    "lookup_ms_p95": 8.82,
+    "false_hit_examples": [
+      {
+        "query": "My new smartphone's main screen flickers intermittently and sometimes goes completely blac",
+        "served": "My TechCorp Nexa Fold X1 screen flickers and goes blank whenever I open it, so I can't see",
+        "sim": 0.8851
+      },
+      {
+        "query": "My Nexa X1 screen stays blank and never displays the startup logo after I replace the batt",
+        "served": "My Nexa X1 screen stays blank and doesn't show any activation message or anything else whe",
+        "sim": 0.8972
+      },
+      {
+        "query": "My Nexa Fold X1 screen is cracked again right where it folds, exposing the inner layers.",
+        "served": "1. \"My Nexa Fold X1 screen is cracked again right where it folds.\"\n2. \"The touch doesn't w",
+        "sim": 0.9351
+      },
+      {
+        "query": "The touch doesn't work on certain parts of the Nexa Fold X1 screen, making navigation impo",
+        "served": "1. \"My Nexa Fold X1 screen is cracked again right where it folds.\"\n2. \"The touch doesn't w",
+        "sim": 0.8713
+      },
+      {
+        "query": "My Nexa A14 screen has dead pixels that appeared as soon as I unboxed the phone, and I nee",
+        "served": "My Nexa A14 screen looks distorted right after I received the phone, and I need a diagnost",
+        "sim": 0.883
+      }
+    ]
+  },
+  "ours_query_only": {
+    "n_paraphrases": 97,
+    "hit_rate": 0.8351,
+    "correct_hit_rate": 0.8247,
+    "n_negatives": 50,
+    "false_hit_rate": 0.1,
+    "lookup_ms_p50": 6.73,
+    "lookup_ms_p95": 8.85,
+    "false_hit_examples": [
+      {
+        "query": "My new smartphone's main screen flickers intermittently and sometimes goes completely blac",
+        "served": "My TechCorp Nexa Fold X1 screen flickers and goes blank whenever I open it, so I can't see",
+        "sim": 0.8851
+      },
+      {
+        "query": "My Nexa X1 screen stays blank and never displays the startup logo after I replace the batt",
+        "served": "My Nexa X1 screen stays blank and doesn't show any activation message or anything else whe",
+        "sim": 0.8972
+      },
+      {
+        "query": "My Nexa Fold X1 screen is cracked again right where it folds, exposing the inner layers.",
+        "served": "1. \"My Nexa Fold X1 screen is cracked again right where it folds.\"\n2. \"The touch doesn't w",
+        "sim": 0.9351
+      },
+      {
+        "query": "The touch doesn't work on certain parts of the Nexa Fold X1 screen, making navigation impo",
+        "served": "1. \"My Nexa Fold X1 screen is cracked again right where it folds.\"\n2. \"The touch doesn't w",
+        "sim": 0.8713
+      },
+      {
+        "query": "My Nexa A14 screen has dead pixels that appeared as soon as I unboxed the phone, and I nee",
+        "served": "My Nexa A14 screen looks distorted right after I received the phone, and I need a diagnost",
+        "sim": 0.883
+      }
+    ]
+  },
+  "no_guard_query_only": {
+    "n_paraphrases": 97,
+    "hit_rate": 0.9691,
+    "correct_hit_rate": 0.9691,
+    "n_negatives": 50,
+    "false_hit_rate": 0.44,
+    "lookup_ms_p50": 6.74,
+    "lookup_ms_p95": 8.53,
+    "false_hit_examples": [
+      {
+        "query": "My Nexa X1 screen flickers rapidly and becomes unreadable when I open the Quick Assist app",
+        "served": "My Nexa X1 screen turns completely blank or white and no text appears when I search for a ",
+        "sim": 0.8738
+      },
+      {
+        "query": "My Nexa X1 screen stays dim and low‑contrast, making text impossible to read when I search",
+        "served": "My Nexa X1 screen turns completely blank or white and no text appears when I search for a ",
+        "sim": 0.9008
+      },
+      {
+        "query": "My Nexa Fold X1 screen flickers intermittently, making it impossible to read text or watch",
+        "served": "My TechCorp Nexa Fold X1 screen flickers and goes blank whenever I open it, so I can't see",
+        "sim": 0.894
+      },
+      {
+        "query": "My tablet screen flickers intermittently when I try to use Data Transfer to scan the QR co",
+        "served": "My tablet screen stays completely blank when I try to use Data Transfer to scan the QR cod",
+        "sim": 0.8929
+      },
+      {
+        "query": "My tablet screen displays a distorted, pixelated image when I attempt to use Data Transfer",
+        "served": "My tablet screen stays completely blank when I try to use Data Transfer to scan the QR cod",
+        "sim": 0.8972
+      }
+    ]
+  },
+  "threshold_sweep_query_only": [
+    {
+      "tau": 0.8,
+      "hit_rate": 0.9588,
+      "correct_hit_rate": 0.8866,
+      "false_hit_rate": 0.32
+    },
+    {
+      "tau": 0.83,
+      "hit_rate": 0.9381,
+      "correct_hit_rate": 0.8763,
+      "false_hit_rate": 0.24
+    },
+    {
+      "tau": 0.86,
+      "hit_rate": 0.8454,
+      "correct_hit_rate": 0.8351,
+      "false_hit_rate": 0.12
+    },
+    {
+      "tau": 0.89,
+      "hit_rate": 0.7938,
+      "correct_hit_rate": 0.7938,
+      "false_hit_rate": 0.04
+    },
+    {
+      "tau": 0.92,
+      "hit_rate": 0.5464,
+      "correct_hit_rate": 0.5464,
+      "false_hit_rate": 0.02
+    }
+  ]
+}

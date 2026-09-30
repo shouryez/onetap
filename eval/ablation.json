@@ -1,0 +1,19 @@
+{
+  "ours": {
+    "deeplink_relevance_avg_0_2": 1.429,
+    "n_deeplinks": 7,
+    "real_catalog_deeplinks": 6,
+    "mapping_latency_p50_ms": 0.0,
+    "mapping_latency_p95_ms": 632.8000000000002,
+    "mapping_cost_per_query_usd": 1.6e-05,
+    "step_accuracy_avg_0_3": 2.25
+  },
+  "full_llm": {
+    "deeplink_relevance_avg_0_2": 1.167,
+    "n_deeplinks": 6,
+    "real_catalog_deeplinks": 3,
+    "mapping_latency_p50_ms": 0.0,
+    "mapping_latency_p95_ms": 16897.30000000002,
+    "mapping_cost_per_query_usd": 0.000913
+  }
+}

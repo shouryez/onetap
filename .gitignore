@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+data/cache_store.tmp
+data/cache_test.json
+data/llm_cache/
+data/llm_quota_state.json
+*.log

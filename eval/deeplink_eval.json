@@ -1,0 +1,38 @@
+{
+  "ours": {
+    "n": 24,
+    "accuracy_at_1": 0.958,
+    "same_screen_wrong_direction": 0.0,
+    "no_deeplink": 0.042,
+    "latency_p50_ms": 517.7,
+    "latency_p95_ms": 5438.3,
+    "cost_per_action_usd": 6.3e-05
+  },
+  "hybrid_only": {
+    "n": 24,
+    "accuracy_at_1": 0.917,
+    "same_screen_wrong_direction": 0.083,
+    "no_deeplink": 0.0,
+    "latency_p50_ms": 0.9,
+    "latency_p95_ms": 7.9,
+    "cost_per_action_usd": 0.0
+  },
+  "rules_only": {
+    "n": 24,
+    "accuracy_at_1": 0.917,
+    "same_screen_wrong_direction": 0.042,
+    "no_deeplink": 0.0,
+    "latency_p50_ms": 0.7,
+    "latency_p95_ms": 0.9,
+    "cost_per_action_usd": 0.0
+  },
+  "full_llm": {
+    "n": 24,
+    "accuracy_at_1": 0.625,
+    "same_screen_wrong_direction": 0.083,
+    "no_deeplink": 0.167,
+    "latency_p50_ms": 1103.7,
+    "latency_p95_ms": 1381.1,
+    "cost_per_action_usd": 0.00261
+  }
+}

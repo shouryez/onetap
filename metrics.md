@@ -17,7 +17,7 @@ Evaluated on `results.jsonl` (all 20 provided scenarios, 19 goals).
 | Rule compliance (Goal / Title / Description syntax) | >= 95% | 100.0% |
 | Absolute URL leaks | 0 | 0 |
 | Deeplink catalog validity (exact URI match) | 100% | 100.0% (8 deeplinks) |
-| Auto actions carrying valid actionable deeplink | >= 90% | 100.0% (50.0% dedicated catalog entry, rest `dummy_positive`) |
+| Auto actions carrying valid actionable deeplink | >= 90% | 100.0% (33.3% dedicated catalog entry, rest `dummy_positive`) |
 | `query_variations` with 8-10 items | 100% | 100.0% |
 
 Honest `no_match` responses (reference article does not address the complaint): 1 / 20.
@@ -40,9 +40,9 @@ Client-side wall clock over HTTP on localhost (server-side `meta.latency_ms` in 
 
 | Execution Path | Target (P95) | P50 (ms) | P95 (ms) |
 | :--- | :--- | :--- | :--- |
-| Cache hit - exact query match (N=40) | <= 300 ms | 1.2 [0] | 1.4 [0] |
-| Cache hit - unseen semantic paraphrase (N=80) | <= 300 ms | 1.3 [0] | 1.7 [0] |
-| Cold query - full pipeline extraction & mapping (N=20) | <= 8000 ms | 2631 [2620] | 8221 [8218] |
+| Cache hit - exact query match (N=40) | <= 300 ms | 1.1 [0] | 1.7 [0] |
+| Cache hit - unseen semantic paraphrase (N=80) | <= 300 ms | 10.1 [8] | 12.3 [11] |
+| Cold query - full pipeline extraction & mapping (N=20) | <= 8000 ms | 2628 [2616] | 5162 [5147] |
 
 Cold requests were spaced 18 s apart (provider tokens-per-minute limit), so each opened a new HTTP connection to
 `localhost`; on Windows that first tries IPv6 and adds ~2 s per new connection (measured: 2297 ms vs 218 ms via
@@ -56,7 +56,7 @@ Cache lookup alone (embedding + matrix search + guard, in-process): P50 6.44 ms 
 
 | Metric Item | Target | Measured Value |
 | :--- | :--- | :--- |
-| Cold query average inference cost | Tracked | $0.00128 |
+| Cold query average inference cost | Tracked | $0.00117 |
 | Cache hit inference cost | $0.00 | $0.00 |
 | Semantic cache hit rate (on unseen paraphrases) | >= 80% | 82.5% (correct-article hits 82.5%) |
 | False-hit rate on adversarial near-miss / out-of-domain queries | (ours) | 10.0% (without Symptom-Signature Guard: 44.0%) |
@@ -112,9 +112,10 @@ false hits 44.0% -> 10.0%.
   the guard. A learned classifier is the natural next step.
 * **Masked deeplinks.** Where the catalog has no dedicated screen, `voiceassist://dummy_positive` is used with a
   generated 5-7 word description; manual (physical/service) actions never carry deeplinks.
-* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Cold P95
-  (~8.2 s) is dominated by waits for the per-minute token budget when a re-route adds a second extraction; P50 stays
-  ~2.6 s. The serving path waits at most 3 s before hedging to the next model; production should use a paid tier
-  (limits ~30x higher, same ~$0.001/query).
+* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Free-tier
+  budgets are per model, so second readings and re-routes run on a different model (`qwen3.8-27b`) than the main
+  extractor (`gpt-oss-120b`), and Gemini free models are an emergency fallback when every Groq model is throttled.
+  This cut cold P95 from ~8.2 s to ~5.1 s without a paid tier; bursts of many simultaneous new questions can still
+  queue. Production would use a paid tier (limits ~30x higher, same ~$0.001/query).
 * **Settings hierarchy variation** across One UI versions is not modelled; the reverse index deeplink -> plans supports
   targeted recompilation when the catalog changes.

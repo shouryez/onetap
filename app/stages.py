@@ -101,12 +101,12 @@ def number_sentences(sentences: list[str]) -> str:
     return "\n".join(f"[{i}] {s}" for i, s in enumerate(sentences, 1))
 
 
-async def extract(query: str, sentences: list[str], second_reading: bool = False) -> dict:
+async def extract(query: str, sentences: list[str], second_reading: bool = False, model: str | None = None) -> dict:
     user = f"Complaint: {query}\n\nReference article (numbered sentences):\n{number_sentences(sentences)}"
     if second_reading:   # an independent second sample (also a distinct memo key)
         user += ("\n\nSecond reading: read the whole article again. Service, repair, warranty and escalation "
                  "options DO count as relevant actions when the article is about this problem.")
-    return await chat_json(EXTRACT_SYS, user, max_tokens=6000)
+    return await chat_json(EXTRACT_SYS, user, model=model, max_tokens=6000)
 
 
 REPAIR_SYS = """You fix fields of a troubleshooting plan so they satisfy strict format rules. Keep the meaning.

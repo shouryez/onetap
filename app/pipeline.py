@@ -155,7 +155,7 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
     if sentences and not goals_work:
         t = time.perf_counter()
         try:
-            res2 = await stages.extract(query, sentences, second_reading=True)
+            res2 = await stages.extract(query, sentences, second_reading=True, model=config.LLM_RESCUE_MODEL)
             g2, log2 = _ground(res2, sentences, siis_text)
             rel2 = max((g["relevance"] for g in g2), default=0.0)
             trace["second_reading"] = {"goals": len(g2), "relevance": rel2, "ms": _ms(t)}
@@ -178,7 +178,7 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
             alt_text = f"{alt['title']}\n{alt['content']}"
             alt_sentences = split_sentences(alt_text)
             try:
-                alt_res = await stages.extract(query, alt_sentences)
+                alt_res = await stages.extract(query, alt_sentences, model=config.LLM_RESCUE_MODEL)
                 alt_goals, alt_log = _ground(alt_res, alt_sentences, alt_text)
                 alt_rel = max((g["relevance"] for g in alt_goals), default=0.0)
                 info["candidate_relevance"] = round(alt_rel, 2)

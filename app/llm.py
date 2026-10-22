@@ -123,23 +123,32 @@ async def chat_json(system: str, user: str, *, model: str | None = None, tempera
     for m in pool:
         if _exhausted(m):
             continue
+        # "gemini:<model>" entries route to Gemini's OpenAI-compatible API (cross-provider emergency fallback)
+        if m.startswith("gemini:"):
+            if not config.BASELINE_API_KEY:
+                continue
+            m_url = config.BASELINE_BASE_URL.rstrip("/") + "/chat/completions"
+            m_headers = {"Authorization": f"Bearer {config.BASELINE_API_KEY}"}
+            m_name, m_base = m.split(":", 1)[1], config.BASELINE_BASE_URL
+        else:
+            m_url, m_headers, m_name, m_base = url, headers, m, base
         body = {
-            "model": m,
+            "model": m_name,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             "temperature": temperature,
             "response_format": {"type": "json_object"},
             "max_tokens": max_tokens,
         }
-        eff = config.reasoning_effort(m)
+        eff = config.reasoning_effort(m_name)
         if eff:
             body["reasoning_effort"] = eff
-        if "generativelanguage" not in base:
+        if "generativelanguage" not in m_base:
             body["seed"] = 7
         waited, attempt = 0.0, 0
         while attempt <= retries:
             try:
                 await _throttle(m)
-                r = await _get_client().post(url, json=body, headers=headers)
+                r = await _get_client().post(m_url, json=body, headers=m_headers)
                 if r.status_code == 429:
                     last = LLMError(f"HTTP 429 ({m}): {r.text[:200]}")
                     if "PerDay" in r.text or "per day" in r.text.lower():

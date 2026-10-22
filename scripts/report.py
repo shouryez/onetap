@@ -208,10 +208,11 @@ false hits {f(100 * ng.get('false_hit_rate', 0))}% -> {f(100 * ours_c.get('false
   the guard. A learned classifier is the natural next step.
 * **Masked deeplinks.** Where the catalog has no dedicated screen, `voiceassist://dummy_positive` is used with a
   generated 5-7 word description; manual (physical/service) actions never carry deeplinks.
-* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Cold P95
-  (~8.2 s) is dominated by waits for the per-minute token budget when a re-route adds a second extraction; P50 stays
-  ~2.6 s. The serving path waits at most 3 s before hedging to the next model; production should use a paid tier
-  (limits ~30x higher, same ~$0.001/query).
+* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Free-tier
+  budgets are per model, so second readings and re-routes run on a different model (`qwen3.8-27b`) than the main
+  extractor (`gpt-oss-120b`), and Gemini free models are an emergency fallback when every Groq model is throttled.
+  This cut cold P95 from ~8.2 s to ~5.1 s without a paid tier; bursts of many simultaneous new questions can still
+  queue. Production would use a paid tier (limits ~30x higher, same ~$0.001/query).
 * **Settings hierarchy variation** across One UI versions is not modelled; the reverse index deeplink -> plans supports
   targeted recompilation when the catalog changes.
 """

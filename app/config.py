@@ -33,8 +33,11 @@ LLM_ENRICH_MODEL = os.getenv("LLM_ENRICH_MODEL", "qwen/qwen3.8-27b")  # query en
 # Fast model for the simple closed-set stages (deeplink choice, format repair)
 LLM_FAST_MODEL = os.getenv("LLM_FAST_MODEL", "openai/gpt-oss-20b")        # closed-set deeplink choice
 LLM_REPAIR_MODEL = os.getenv("LLM_REPAIR_MODEL", "qwen/qwen3.8-27b")
+# Second readings / re-routes run on a DIFFERENT model than the main extractor, so on rate-limited tiers they use
+# their own tokens-per-minute budget instead of queueing behind the first extraction.
+LLM_RESCUE_MODEL = os.getenv("LLM_RESCUE_MODEL", "qwen/qwen3.8-27b")
 # Hedging pool: tried in order when a model is overloaded (5xx) or out of quota (429)
-LLM_MODEL_POOL = [m.strip() for m in os.getenv("LLM_MODEL_POOL", "openai/gpt-oss-120b,qwen/qwen3.8-27b,openai/gpt-oss-20b").split(",") if m.strip()]
+LLM_MODEL_POOL = [m.strip() for m in os.getenv("LLM_MODEL_POOL", "openai/gpt-oss-120b,qwen/qwen3.8-27b,openai/gpt-oss-20b,gemini:gemini-3.5-flash-lite,gemini:gemini-flash-lite-latest").split(",") if m.strip()]
 # Secondary model used only offline for held-out paraphrases / judging (different prompt+temp; ideally other family)
 LLM_EVAL_MODEL = os.getenv("LLM_EVAL_MODEL", LLM_MODEL)
 LLM_TIMEOUT_S = _f("LLM_TIMEOUT_S", 25)

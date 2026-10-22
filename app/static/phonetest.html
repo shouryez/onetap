@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phone Settings Test</title>
+<style>
+  :root { --bg:#f6f4ef; --fg:#1b1b1b; --mut:#6b6b6b; --card:#fff; --line:#e3dfd6; --ok:#1f8a4c; --bad:#c0392b; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151515; --fg:#eee; --mut:#999; --card:#202020; --line:#333; } }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui, sans-serif; }
+  h1 { font-size:20px; margin:4px 0 6px; }
+  p { color:var(--mut); margin:0 0 14px; }
+  .row { display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
+         border-radius:12px; padding:10px 12px; margin-bottom:8px; }
+  .row b { flex:1; font-weight:600; }
+  a.btn { text-decoration:none; background:#1b1b1b; color:#fff; padding:8px 12px; border-radius:9px; font-size:14px; }
+  @media (prefers-color-scheme: dark) { a.btn { background:#eee; color:#111; } }
+  .st { width:72px; text-align:right; font-size:13px; color:var(--mut); }
+  .st.ok { color:var(--ok); } .st.bad { color:var(--bad); }
+  #ua { font-size:12px; color:var(--mut); word-break:break-all; margin-top:14px; }
+</style>
+</head>
+<body>
+<h1>Open Settings on this phone</h1>
+<p>Tap each button. If the right Settings screen opens, come back here and it shows <b>opened</b>.
+If the browser blocks it, it shows <b>blocked</b>. Try once in Samsung Internet and once in Chrome.</p>
+<div id="list"></div>
+<div id="ua"></div>
+<script>
+const TESTS = [
+  ["Display", "android.settings.DISPLAY_SETTINGS"],
+  ["Wi-Fi", "android.settings.WIFI_SETTINGS"],
+  ["Bluetooth", "android.settings.BLUETOOTH_SETTINGS"],
+  ["Sound", "android.settings.SOUND_SETTINGS"],
+  ["Battery saver", "android.settings.BATTERY_SAVER_SETTINGS"],
+  ["Accessibility", "android.settings.ACCESSIBILITY_SETTINGS"],
+  ["Date & time", "android.settings.DATE_SETTINGS"],
+  ["Software update", "android.settings.SYSTEM_UPDATE_SETTINGS"],
+  ["Internet popup", "android.settings.panel.action.INTERNET_CONNECTIVITY"],
+  ["Volume popup", "android.settings.panel.action.VOLUME"],
+  ["Settings home", "android.settings.SETTINGS"],
+];
+const page = location.origin + location.pathname;
+const params = new URLSearchParams(location.search);
+const browser = /SamsungBrowser/.test(navigator.userAgent) ? "samsung" : /Chrome/.test(navigator.userAgent) ? "chrome" : "other";
+const report = (key, result) => fetch(`${page}?r=${result}&t=${key}&b=${browser}`).catch(() => {});
+const state = JSON.parse(sessionStorage.getItem("pt") || "{}");
+if (params.get("fail")) { state[params.get("fail")] = "bad"; report(params.get("fail"), "blocked"); }
+const save = () => { try { sessionStorage.setItem("pt", JSON.stringify(state)); } catch (e) {} };
+save();
+let pending = null;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && pending) { state[pending] = "ok"; save(); report(pending, "opened"); pending = null; render(); }
+});
+function render() {
+  document.getElementById("list").innerHTML = TESTS.map(([name, action], i) => {
+    const key = "t" + i;
+    const fb = encodeURIComponent(`${page}?fail=${key}`);
+    const href = `intent:#Intent;action=${action};S.browser_fallback_url=${fb};end`;
+    const s = state[key];
+    return `<div class="row"><b>${name}</b><span class="st ${s || ""}">${s === "ok" ? "opened" : s === "bad" ? "blocked" : ""}</span>` +
+           `<a class="btn" href="${href}" data-k="${key}">Open</a></div>`;
+  }).join("");
+  document.querySelectorAll("a.btn").forEach(a => a.onclick = () => { pending = a.dataset.k; });
+}
+render();
+document.getElementById("ua").textContent = navigator.userAgent;
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@ from fastapi import Request
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-from . import config, embed, indic
+from . import config, device, embed, indic
 from .cache import get_cache
 from .llm import BYPASS_DISK_CACHE
 from .pipeline import troubleshoot
@@ -261,6 +261,39 @@ async def post_translate_plan(req: TranslatePlanRequest):
 async def ui_config():
     """Feature flags the demo UI needs."""
     return {"indic": indic.enabled(), "languages": indic.LANG_NAMES}
+
+
+# ---------------------------------------------------------------- live phone mode (wireless debugging)
+class PairRequest(BaseModel):
+    host_port: str = Field(..., max_length=40)
+    code: str = Field("", max_length=12)
+
+
+class ApplyRequest(BaseModel):
+    actionName: str = ""
+    steps: list[str] = []
+    deeplink: dict = {}
+
+
+@app.get("/v1/device")
+async def device_status():
+    return await device.status()
+
+
+@app.post("/v1/device/pair")
+async def device_pair(req: PairRequest):
+    try:
+        return await (device.pair(req.host_port, req.code) if req.code else device.connect(req.host_port))
+    except device.DeviceError as e:
+        raise HTTPException(502, str(e))
+
+
+@app.post("/v1/device/apply")
+async def device_apply(req: ApplyRequest):
+    try:
+        return await device.apply(req.model_dump())
+    except device.DeviceError as e:
+        raise HTTPException(502, str(e))
 
 
 @app.get("/v1/live")

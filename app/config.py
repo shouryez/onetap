@@ -75,6 +75,7 @@ USD_INR = _f("USD_INR", 84)
 EST_COLD_COST_USD = _f("EST_COLD_COST_USD", 0.0008)                     # measured round-1 average
 EST_COLD_SECONDS = _f("EST_COLD_SECONDS", 3.2)
 PUBLIC_URL = os.getenv("PUBLIC_URL", "")                                 # https tunnel for audience phones
+ADB_PATH = os.getenv("ADB_PATH", "")                                     # live phone mode (wireless debugging)
 
 # ---- Embeddings ----
 EMBED_MODEL = os.getenv("EMBED_MODEL", "BAAI/bge-small-en-v1.5")

@@ -336,6 +336,16 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 .mclose{position:absolute;top:14px;right:16px;border:0;background:none;font-size:20px;cursor:pointer;color:var(--ink-2)}
 .prog{height:10px;background:var(--paper-2);border-radius:6px;overflow:hidden;margin:6px 0 14px}
 .prog i{display:block;height:100%;width:0;background:var(--signal);transition:width .25s linear}
+.devdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:1px}
+.devdot.on{background:#1f9d55;box-shadow:0 0 0 3px rgba(31,157,85,.2)}
+.devstate{border:1px solid var(--rule);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:14px}
+.devstate b{font-weight:600}
+.devform{display:grid;grid-template-columns:1fr 120px auto;gap:8px;margin:6px 0 4px}
+.devform input{border:1px solid var(--rule);border-radius:10px;padding:9px 11px;font:500 14px var(--mono);background:var(--paper);color:var(--ink);min-width:0}
+.devform button{border:0;border-radius:10px;padding:9px 14px;background:var(--ink);color:var(--paper);font:600 13px var(--sans);cursor:pointer}
+.devsteps{color:var(--ink-2);font-size:13.5px;margin:0 0 12px;padding-left:20px}
+.devsteps li{margin:3px 0}
+@media (max-width:640px){.devform{grid-template-columns:1fr 1fr}.devform button{grid-column:1/-1}}
 .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 @media (max-width:640px){.mgrid{grid-template-columns:repeat(2,1fr)}}
 .mstat{border:1px solid var(--rule);border-radius:14px;padding:10px 12px}
@@ -399,7 +409,8 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
   <div class="tagline">Say what's wrong in your own words. OneTap turns it into a <em>verified</em>, ordered fix, and every setting is <em>one tap</em> away.</div>
   <div class="hdr-right">
     <span class="stamp">Theme 02 · PRISM 2026</span>
-    <button class="iconbtn" id="audbtn" title="Let the audience use OneTap on their phones" aria-label="Audience mode" style="width:auto;padding:0 12px;font:600 12px var(--sans)">📱 Audience</button>
+    <button class="iconbtn" id="devbtn" title="Run one-tap actions on a real phone (wireless debugging)" aria-label="Live phone" style="width:auto;padding:0 12px;font:600 12px var(--sans)"><span id="devdot" class="devdot"></span>Phone</button>
+    <button class="iconbtn" id="audbtn"title="Let the audience use OneTap on their phones" aria-label="Audience mode" style="width:auto;padding:0 12px;font:600 12px var(--sans)">📱 Audience</button>
     <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
   </div>
 </header>
@@ -570,6 +581,21 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
     <div class="qrnote" id="qrnote">Phones must be on the same Wi-Fi as this laptop. For phone microphones, open the https tunnel link.</div>
     <div class="qrnote" id="qralt" style="margin-top:8px"></div>
   </div></div>
+</div></div>
+<div class="modal" id="mdev" role="dialog" aria-label="Live phone"><div class="mbox" style="max-width:560px">
+  <button class="mclose" data-close="mdev" aria-label="Close">✕</button>
+  <h3>Live phone</h3>
+  <div class="sub">Connect a real Android/Samsung phone over Wi-Fi. Every ⚡ one-tap button then changes the setting on the phone itself. Restart, reset and clear-data actions only open the screen.</div>
+  <div class="devstate" id="devstate">Checking…</div>
+  <ol class="devsteps">
+    <li>Phone and laptop on the <b>same Wi-Fi</b> (or the laptop on the phone's hotspot).</li>
+    <li>Phone: Settings › About phone › Software information › tap <b>Build number</b> 7 times.</li>
+    <li>Settings › Developer options › turn on <b>Wireless debugging</b> › tap it › <b>Pair device with pairing code</b>.</li>
+    <li>Type the IP address &amp; port and the 6-digit code shown there:</li>
+  </ol>
+  <div class="devform"><input id="devpair" placeholder="192.168.1.5:37123" inputmode="url"><input id="devcode" placeholder="code" inputmode="numeric"><button id="devpairbtn">Pair</button></div>
+  <div class="qrnote" style="margin:12px 0 4px">Already paired? Enter the IP address &amp; port from the main Wireless debugging screen:</div>
+  <div class="devform" style="grid-template-columns:1fr auto"><input id="devconn" placeholder="192.168.1.5:41235" inputmode="url"><button id="devconnbtn">Connect</button></div>
 </div></div>
 <div class="toast" id="toast" role="status"></div>
 <canvas id="confetti"></canvas>
@@ -823,6 +849,7 @@ function screenName(dl){
 function openSettings(x){
   if (!x || !x.dl) return;
   const dl = x.dl, t = dl.originalType || "";
+  if (DEV.connected) applyOnPhone(x);
   $("scrumb").textContent = "Settings · opened by deeplink";
   $("stitle").textContent = screenName(dl);
   $("sname").textContent = x.v ? x.v.key : screenName(dl);
@@ -1075,6 +1102,39 @@ $("scalebtn").onclick = async () => {
 
 /* ---------- audience mode (Feature A): QR + mirror phones on the projector ---------- */
 let MIRROR = null, MJOBS = {};
+/* ---------- live phone: run one-tap actions on a real phone over wireless debugging ---------- */
+let DEV = {connected: false};
+function showDevice(d){
+  DEV = d || {connected: false};
+  $("devdot").classList.toggle("on", !!DEV.connected);
+  $("devbtn").title = DEV.connected ? `Live phone: ${DEV.brand} ${DEV.model}` : "Run one-tap actions on a real phone (wireless debugging)";
+  $("devstate").innerHTML = DEV.connected
+    ? `<span class="devdot on"></span><b>${esc(DEV.brand)} ${esc(DEV.model)}</b> · Android ${esc(DEV.android)} · connected. Every ⚡ one-tap now runs on this phone.`
+    : `<span class="devdot"></span>${esc(DEV.reason || "No phone connected.")}`;
+}
+async function refreshDevice(){ try { showDevice(await (await fetch("/v1/device")).json()); } catch (e) { showDevice(null); } }
+async function pairDevice(host_port, code){
+  $("devstate").textContent = code ? "Pairing…" : "Connecting…";
+  try {
+    const r = await fetch("/v1/device/pair", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({host_port, code})});
+    const d = await r.json(); if (!r.ok) throw new Error(d.detail || r.status);
+    showDevice(d); if (d.connected) toast(`📱 ${d.brand} ${d.model} connected`);
+  } catch (e) { showDevice({connected: false, reason: e.message || String(e)}); }
+}
+async function applyOnPhone(x){
+  const sg = x.a.stepGroups[0];
+  try {
+    const r = await fetch("/v1/device/apply", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({actionName: x.a.actionName, steps: sg.steps, deeplink: {message: x.dl.message, description: x.dl.description, originalType: x.dl.originalType}})});
+    const d = await r.json(); if (!r.ok) throw new Error(d.detail || r.status);
+    toast(`📱 ${DEV.model}: ${d.changed ? `${d.label} turned ${d.state}` : `opened ${d.label}`}`);
+  } catch (e) { toast("📱 Phone: " + (e.message || e)); refreshDevice(); }
+}
+$("devbtn").onclick = () => { $("mdev").classList.add("open"); refreshDevice(); };
+$("devpairbtn").onclick = () => pairDevice($("devpair").value, $("devcode").value);
+$("devconnbtn").onclick = () => pairDevice($("devconn").value, "");
+if (!AUD) refreshDevice();
+
 $("audbtn").onclick = async () => {
   $("maud").classList.add("open");
   try {

@@ -310,6 +310,86 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 .phone{transition:transform .5s var(--ease);transform:perspective(1600px) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg))}
 .narr.wipe{animation:wipe .9s var(--ease)}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+/* ---------- impact strip (Feature D) ---------- */
+.impact{max-width:1360px;margin:12px auto 0;padding:0 24px}
+.impact-inner{display:flex;gap:0;align-items:stretch;background:var(--ink);color:var(--paper);border-radius:16px;overflow:hidden}
+.imp{flex:1;padding:11px 16px;border-right:1px solid color-mix(in srgb,var(--paper) 14%,transparent);min-width:0}
+.imp .v{font:500 22px/1.1 var(--mono);letter-spacing:-.02em;white-space:nowrap}
+.imp .v.sig{color:var(--signal)}
+.imp .l{font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-top:3px}
+.imp-act{display:flex;align-items:center;gap:8px;padding:0 14px}
+.imp-act button{border:1px solid color-mix(in srgb,var(--paper) 30%,transparent);background:transparent;color:var(--paper);border-radius:999px;padding:7px 12px;cursor:pointer;font:600 12px var(--sans);white-space:nowrap;transition:all .2s var(--ease)}
+.imp-act button:hover{background:var(--paper);color:var(--ink)}
+.imp-act .hot{background:var(--signal);border-color:var(--signal)}
+.imp-act .hot:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.imp .v.pulse{animation:impulse .8s var(--ease)}
+@keyframes impulse{30%{color:var(--signal);transform:scale(1.06)}}
+@media (max-width:900px){.impact-inner{flex-wrap:wrap}.imp{flex:1 1 45%}}
+
+/* ---------- modal (scale test, audience QR) ---------- */
+.modal{position:fixed;inset:0;background:rgba(15,13,10,.55);display:none;place-items:center;z-index:80;padding:16px;backdrop-filter:blur(3px)}
+.modal.open{display:grid;animation:fadeUp .3s var(--ease)}
+.mbox{background:var(--card);border:1px solid var(--rule);border-radius:22px;max-width:760px;width:100%;padding:22px 24px;position:relative;max-height:92vh;overflow:auto}
+.mbox h3{font:italic 500 26px var(--serif);margin:0 0 4px}
+.mbox .sub{color:var(--ink-2);font-size:13.5px;margin-bottom:16px}
+.mclose{position:absolute;top:14px;right:16px;border:0;background:none;font-size:20px;cursor:pointer;color:var(--ink-2)}
+.prog{height:10px;background:var(--paper-2);border-radius:6px;overflow:hidden;margin:6px 0 14px}
+.prog i{display:block;height:100%;width:0;background:var(--signal);transition:width .25s linear}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:640px){.mgrid{grid-template-columns:repeat(2,1fr)}}
+.mstat{border:1px solid var(--rule);border-radius:14px;padding:10px 12px}
+.mstat .v{font:500 24px var(--mono)} .mstat .l{font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.proj{margin-top:16px;background:var(--ink);color:var(--paper);border-radius:16px;padding:14px 16px;display:none}
+.proj.show{display:block;animation:fadeUp .4s var(--ease)}
+.proj b{color:var(--signal)}
+.qrwrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.qr{background:#fff;padding:12px;border-radius:16px;line-height:0}
+.qr img,.qr canvas{width:260px;height:260px;image-rendering:pixelated}
+.qrurl{font:500 13px var(--mono);word-break:break-all;margin:6px 0}
+.qrnote{font-size:12.5px;color:var(--ink-2)}
+.livebadge{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--mono);letter-spacing:.08em;color:var(--signal)}
+.livebadge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--signal);animation:blink 1s infinite}
+
+/* ---------- live build log (Feature B) ---------- */
+.livelog{margin:12px 2px;border:1px solid var(--rule);border-radius:18px;background:var(--screen-card);padding:10px 12px;font-size:12.5px}
+.livelog .row{display:flex;gap:8px;align-items:baseline;padding:4px 0;animation:fadeUp .35s var(--ease) both}
+.livelog .row .ic{width:16px;flex:none;text-align:center;color:var(--ok);font-weight:700}
+.livelog .row.warn .ic{color:var(--signal-ink)} .livelog .row.bad .ic{color:var(--crit)}
+.livelog .row .tx{flex:1;min-width:0}
+.livelog .row .tm{font:500 10.5px var(--mono);color:var(--muted);white-space:nowrap}
+.livelog .row.pending .ic::after{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid var(--signal);border-top-color:transparent;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+details.buildlog{margin:6px 2px 10px;font-size:12px;color:var(--ink-2)}
+details.buildlog summary{cursor:pointer;font:500 11px var(--mono);letter-spacing:.06em;color:var(--muted);list-style:none}
+details.buildlog summary::before{content:"▸ "} details.buildlog[open] summary::before{content:"▾ "}
+.act.skel .tap{background:var(--paper-2);color:var(--muted);position:relative;overflow:hidden}
+.act.skel .tap::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--signal) 22%,transparent),transparent);animation:sweep 1.1s infinite}
+.origin{font:600 10.5px var(--mono);letter-spacing:.06em;color:var(--signal-ink);margin:10px 0 -8px auto;text-align:right}
+
+/* ---------- Indian languages (Feature E) ---------- */
+.heard{margin:10px 0 2px auto;max-width:90%;font-size:12.5px;color:var(--ink-2);text-align:right;animation:fadeUp .35s var(--ease)}
+.heard b{color:var(--ink)} .heard .nat{font-size:15px;color:var(--ink);display:block}
+.langbar{display:flex;gap:6px;align-items:center;margin:4px 2px 8px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.langbar button{border:1px solid var(--rule);background:var(--screen-card);border-radius:999px;padding:5px 11px;cursor:pointer;font:600 12px var(--sans);transition:all .2s}
+.langbar button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- audience mode (Feature A): the page IS the phone app ---------- */
+body.aud{background:var(--screen);background-image:none}
+body.aud header,body.aud .how,body.aud .scen,body.aud .impact,body.aud .panel,body.aud footer{display:none}
+body.aud main{display:block;padding:0;max-width:none}
+body.aud .phone-wrap{position:static;max-width:560px;margin:0 auto}
+body.aud .phone{background:none;box-shadow:none;padding:0;height:auto;border-radius:0;transform:none!important}
+body.aud .phone::before,body.aud .island,body.aud .sbar{display:none}
+body.aud .screen{border-radius:0;min-height:100vh;height:auto}
+body.aud .app{padding:14px 14px 40px;overflow:visible}
+body.aud .settings,body.aud .guide{position:fixed}
+.audhello{display:none;font-size:12.5px;color:var(--ink-2);background:var(--signal-soft);border-radius:14px;padding:9px 12px;margin:2px 0 12px}
+body.aud .audhello{display:block}
+.audchips{display:none;gap:6px;flex-wrap:wrap;margin-top:10px}
+body.aud .audchips{display:flex}
+body.aud .toggles label:not(:has(#catfb)){display:none}
+
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -319,6 +399,7 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
   <div class="tagline">Say what's wrong in your own words. OneTap turns it into a <em>verified</em>, ordered fix, and every setting is <em>one tap</em> away.</div>
   <div class="hdr-right">
     <span class="stamp">Theme 02 · PRISM 2026</span>
+    <button class="iconbtn" id="audbtn" title="Let the audience use OneTap on their phones" aria-label="Audience mode" style="width:auto;padding:0 12px;font:600 12px var(--sans)">📱 Audience</button>
     <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
   </div>
 </header>
@@ -331,6 +412,17 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
     <div class="how-step" data-k="map"><div class="n">04 · CONNECT</div><h4>Deeplink resolution</h4><p>Each Settings action is matched to the exact catalog screen. The AI picks from a list and never invents a link.</p></div>
     <div class="how-step" data-k="check"><div class="n">05 · CHECK</div><h4>Rules + ordering</h4><p>Format rules are enforced in code, and safe fixes come first while restarts and resets come last.</p></div>
     <div class="how-step" data-k="learn"><div class="n">06 · LEARN</div><h4>Feedback heals the cache</h4><p>👍 / 👎 on every plan. Plans that don't help are evicted and rebuilt from the source next time.</p></div>
+  </div>
+</section>
+
+<section class="impact" aria-label="Live impact">
+  <div class="impact-inner">
+    <div class="imp"><div class="v" id="i-req">0</div><div class="l">complaints handled</div></div>
+    <div class="imp"><div class="v" id="i-hit">–</div><div class="l">answered from memory</div></div>
+    <div class="imp"><div class="v" id="i-cost">₹0</div><div class="l">total AI cost</div></div>
+    <div class="imp"><div class="v sig" id="i-time">0 min</div><div class="l">agent time saved</div></div>
+    <div class="imp"><div class="v sig" id="i-inr">₹0</div><div class="l">agent cost saved</div></div>
+    <div class="imp-act"><button id="scalebtn" class="hot">▶ Scale test</button><button id="assume" title="How these are computed">ⓘ</button></div>
   </div>
 </section>
 
@@ -350,6 +442,7 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
       <div class="app" id="app">
         <div class="apphead"><span class="t"><b>One</b>Tap</span><span class="mono" style="font-size:11px;color:var(--muted)">support</span></div>
 
+        <div class="audhello">👋 You're using <b>OneTap</b> live: type or speak any phone problem. Your request appears on the big screen with everything the engine does behind the scenes.</div>
         <div class="composer">
           <textarea id="q" aria-label="Describe your problem" placeholder="e.g. my screen keeps blinking and goes black when I unfold it"></textarea>
           <div class="src-tabs" role="tablist" aria-label="Reference source">
@@ -454,13 +547,42 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 </main>
 <footer>POST /v1/troubleshoot · GET /health · model-agnostic LLM layer · local CPU embeddings · every rule enforced in code</footer>
 
+<div class="modal" id="mscale" role="dialog" aria-label="Scale test"><div class="mbox">
+  <button class="mclose" data-close="mscale" aria-label="Close">✕</button>
+  <h3>Scale test</h3>
+  <div class="sub">Fires real complaint variants (held-out paraphrases, adversarial look-alikes, every stored rewording) at OneTap's memory, the path most traffic takes in production, then projects the cost of compiling 10,000 scenarios from <b>measured</b> numbers.</div>
+  <div class="prog"><i id="sprog"></i></div>
+  <div class="mgrid">
+    <div class="mstat"><div class="v" id="s-done">0</div><div class="l">requests</div></div>
+    <div class="mstat"><div class="v" id="s-rps">–</div><div class="l">requests / second</div></div>
+    <div class="mstat"><div class="v" id="s-p95">–</div><div class="l">p95 latency (ms)</div></div>
+    <div class="mstat"><div class="v" id="s-hit">–</div><div class="l">answered from memory</div></div>
+  </div>
+  <div class="proj" id="sproj"></div>
+</div></div>
+<div class="modal" id="maud" role="dialog" aria-label="Audience mode"><div class="mbox">
+  <button class="mclose" data-close="maud" aria-label="Close">✕</button>
+  <h3>Try it on your phone</h3>
+  <div class="sub">Scan to open OneTap on your phone. Everything you ask appears live on this screen, stage by stage.</div>
+  <div class="qrwrap"><div class="qr" id="qr"></div><div style="flex:1;min-width:220px">
+    <div class="livebadge" id="livestate">MIRRORING AUDIENCE</div>
+    <div class="qrurl" id="qrurl">…</div>
+    <div class="qrnote" id="qrnote">Phones must be on the same Wi-Fi as this laptop. For phone microphones, open the https tunnel link.</div>
+    <div class="qrnote" id="qralt" style="margin-top:8px"></div>
+  </div></div>
+</div></div>
 <div class="toast" id="toast" role="status"></div>
 <canvas id="confetti"></canvas>
+<script src="/static/qrcode.min.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const TAU = 0.87;
 let examples = [], src = "auto";
+const AUD = new URLSearchParams(location.search).has("audience");
+if (AUD) document.body.classList.add("aud");
+let CFG = {indic:false, languages:{}};
+fetch("/v1/config").then(r => r.json()).then(c => { CFG = c; setupVoice(); }).catch(() => setupVoice());
 
 /* ---------- theme + clock ---------- */
 $("theme").onclick = () => { const r=document.documentElement; const dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches; r.dataset.theme = dark ? "light" : "dark"; };
@@ -543,42 +665,115 @@ function setSrc(s){ document.querySelector(`.src-tabs [data-src="${s}"]`).click(
 $("go").onclick = run;
 $("q").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); run(); } });
 
-async function run(){
-  const q = $("q").value.trim(); if (!q) { $("q").focus(); return; }
+async function run(opts = {}){
+  const typed = $("q").value.trim();
+  const q = (opts.query || typed).trim(); if (!q) { $("q").focus(); return; }
+  const shown = opts.native || typed || q;
   const body = {query: q};
   if (src === "sample" && $("article").value !== "") body.siis_response = examples[+$("article").value].siis_response;
   if (src === "paste") { const p = $("pasted").value.trim(); if (!p) { $("pasted").focus(); return; } body.siis_response = p; }
-  const params = new URLSearchParams({debug:"true"});
+  const params = new URLSearchParams({origin: AUD ? "phone" : "web"});
   if ($("nocache").checked) params.set("nocache","true");
   if ($("fresh").checked) params.set("fresh","true");
   if ($("catfb").checked) params.set("catalog_fallback","true");
-
   closeSettings(); closeGuide();
   $("go").disabled = true; $("island").classList.add("busy");
-  $("thread").innerHTML = `<div class="bubble">${esc(q)}</div>
-    <div class="scan"><div class="lbl" id="scanlbl">normalising complaint…</div><div class="line" style="width:88%"></div><div class="line" style="width:64%"></div><div class="line" style="width:76%"></div></div>`;
-  $("app").scrollTop = $("app").scrollHeight;
-  lightHow(["understand","cache"]);
-  $("narr").innerHTML = `<span class="ph">Working… checking whether this problem has been solved before.</span>`;
-  const phases = ["checking the semantic cache…","reading the support article…","extracting grounded steps…","resolving Settings deeplinks…","applying rules & ordering…"];
-  let ph = 0; const timer = setInterval(() => { const el=$("scanlbl"); if (el && ph < phases.length) el.textContent = phases[ph++]; }, 900);
-  const t0 = performance.now();
+  const job = newJob(shown, body, opts);
   try {
-    const r = await fetch("/v1/troubleshoot?" + params, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)});
-    const o = await r.json();
-    clearInterval(timer); render(o, q, body, performance.now() - t0);
+    const r = await fetch("/v1/troubleshoot/stream?" + params, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    await readSSE(r, (ev, d) => onStage(job, ev, d));
   } catch (e) {
-    clearInterval(timer);
-    $("thread").innerHTML += `<div class="nomatch"><div class="big">Couldn't reach the engine</div><p>${esc(e)}</p></div>`;
+    $("thread").insertAdjacentHTML("beforeend", `<div class="nomatch"><div class="big">Couldn't reach the engine</div><p>${esc(e.message || e)}</p></div>`);
   }
   $("go").disabled = false; $("island").classList.remove("busy");
 }
 
+async function readSSE(resp, cb){
+  const rd = resp.body.getReader(), dec = new TextDecoder(); let buf = "";
+  for (;;) {
+    const {value, done} = await rd.read(); if (done) break;
+    buf += dec.decode(value, {stream:true});
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+      let ev = "message", data = "";
+      chunk.split("\n").forEach(l => { if (l.startsWith("event:")) ev = l.slice(6).trim(); else if (l.startsWith("data:")) data += l.slice(5).trim(); });
+      if (data) { try { cb(ev, JSON.parse(data)); } catch (e) { console.warn(e); } }
+    }
+  }
+}
+
+function newJob(shown, body, opts = {}){
+  const job = {shown, body, t0: performance.now(), lang: opts.lang || null, rows: [], origin: opts.origin || null};
+  let head = opts.origin ? `<div class="origin">📱 FROM THE AUDIENCE</div>` : "";
+  head += `<div class="bubble">${esc(shown)}</div>`;
+  if (opts.heard) head += `<div class="heard">🎙 Heard in <b>${esc(opts.heard.language_name)}</b><span class="nat">${esc(opts.heard.transcript)}</span>→ ${esc(opts.heard.english)}</div>`;
+  $("thread").innerHTML = head + `<div class="livelog" id="livelog"></div><div id="stream-cards"></div>`;
+  job.head = head;
+  logRow(job, "pending", "Checking memory for a solved problem like this…", null, "p-cache");
+  $("app").scrollTop = 0;
+  lightHow(["understand"]);
+  $("narr").innerHTML = `<span class="ph">Working… every stage appears on the phone as it happens.</span>`;
+  return job;
+}
+
+function logRow(job, kind, html, tms, id){
+  const ll = $("livelog"); if (!ll) return;
+  const ic = kind === "bad" ? "✕" : kind === "warn" ? "↻" : kind === "pending" ? "" : "✓";
+  const row = `<div class="row ${kind}" ${id ? `id="${id}"` : ""}><span class="ic">${ic}</span><span class="tx">${html}</span><span class="tm">${tms != null ? (tms/1000).toFixed(2) + " s" : ""}</span></div>`;
+  const ex = id && document.getElementById(id);
+  if (ex) ex.outerHTML = row; else ll.insertAdjacentHTML("beforeend", row);
+  job.rows.push({kind, html, tms});
+  const app = $("app"); if (app.scrollHeight - app.scrollTop < 1400) app.scrollTo({top: app.scrollHeight, behavior: "smooth"});
+}
+
+function onStage(job, ev, d){
+  const t = d.t_ms;
+  if (ev === "translated" && d.translated_query) logRow(job, "", `Translated from <b>${esc(d.language_name)}</b>: “${esc(d.translated_query)}”`, t);
+  if (ev === "cache") {
+    const rej = (d.guard_rejected || [])[0];
+    if (d.hit) logRow(job, "", `<b>Memory hit</b>: same problem solved before (similarity ${(+d.similarity||1).toFixed(2)}${d.match === "exact" ? ", exact wording" : ""}), so no AI call needed`, t, "p-cache");
+    else if (rej) logRow(job, "bad", `Look-alike found (${rej.similarity}) but the <b>guard rejected it</b>: ${esc(rej.reason.replace(/_/g," "))}`, t, "p-cache");
+    else logRow(job, "", `New problem: nothing in memory is close enough${d.best_similarity ? ` (best ${(+d.best_similarity).toFixed(2)} &lt; 0.87)` : ""}`, t, "p-cache");
+    lightHow(d.hit ? ["understand","cache"] : ["understand","cache"]);
+    if (!d.hit) logRow(job, "pending", "Reading the support article and extracting cited steps…", null, "p-extract");
+  }
+  if (ev === "source") {
+    if (d.kind === "none") logRow(job, "warn", "No support article covers this", t);
+    else logRow(job, "", `${d.kind === "given" ? "Reading the attached article" : "Found in the knowledge base"}: <b>${esc(d.title || "")}</b> (${d.sentences} numbered sentences)`, t);
+  }
+  if (ev === "understood" && d.canonical_query) logRow(job, "", `Understood as: <i>${esc(d.canonical_query)}</i>`, t);
+  if (ev === "catalog") logRow(job, (d.picked||[]).length ? "" : "warn", (d.picked||[]).length ? `No article, so the AI may only pick <b>real Settings</b> from the catalog: ${d.picked.length} picked` : "Nothing in the Settings catalog fits, so no guessing", t, "p-extract");
+  if (ev === "extracted") { logRow(job, "", `<b>${d.steps}</b> steps extracted, each citing its source sentence`, t, "p-extract"); lightHow(["understand","cache","extract"]); }
+  if (ev === "grounded") logRow(job, d.dropped ? "warn" : "", `Grounding check: <b>${d.kept}</b> steps verified against the article${d.dropped ? `, <b>${d.dropped}</b> dropped as unsupported` : ""}`, t);
+  if (ev === "reroute") logRow(job, d.used ? "warn" : "", d.used ? `Attached article barely covers this (relevance ${d.given_article_relevance}), so it <b>switched to “${esc(d.candidate)}”</b> (relevance ${d.candidate_relevance})` : `Checked other articles; none covers it better, so it kept the original`, t);
+  if (ev === "actions") {
+    lightHow(["understand","cache","extract","map"]);
+    let n = 0;
+    $("stream-cards").innerHTML = d.goals.map(g => `<div class="goal"><h3>${esc(g.topic || "Plan")}</h3>` + g.actions.map(a => { n++;
+      return `<div class="act skel" style="--i:${n}"><div class="top"><span class="num">${n}</span><div><h4>${esc(a.actionName)}</h4></div><span class="badge b-${a.category}">${a.category}</span></div><ol class="steps">${a.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>${a.category !== "manual" ? `<button class="tap" disabled><span class="bolt">⚡</span>finding the exact Settings screen…</button>` : ""}</div>`; }).join("") + `</div>`).join("");
+    logRow(job, "pending", "Linking each step to its exact Settings screen…", null, "p-map");
+  }
+  if (ev === "deeplinks") { logRow(job, "", `<b>${(d.links||[]).length}</b> one-tap Settings link${(d.links||[]).length === 1 ? "" : "s"} resolved from the catalog`, t, "p-map"); lightHow(["understand","cache","extract","map","check"]); }
+  if (ev === "error") logRow(job, "bad", "Engine error: " + esc(d.message), t);
+  if (ev === "result") {
+    const o = d.result, wall = performance.now() - job.t0;
+    o.meta = o.meta || {};
+    if (!job.lang && o.meta.input_language && o.meta.input_language !== "en-IN") job.lang = o.meta.input_language;
+    logRow(job, "", `<b>Done</b> in ${(o.meta.latency_ms/1000).toFixed(2)} s · ${o.meta.cache_hit ? "from memory, $0" : "$" + (o.meta.cost_usd||0).toFixed(4)}`, d.t_ms);
+    render(o, job.shown, job.body, wall, job);
+  }
+}
+
 /* ---------- render: phone ---------- */
-function render(o, q, body, wall){
+function render(o, q, body, wall, job){
   const m = o.meta || {}, tr = o.trace || {}, ctx = o.response.contexts;
   const canon = tr.enrichment && tr.enrichment.canonical_query;
-  let h = `<div class="bubble">${esc(q)}</div>`;
+  let h = job ? job.head : `<div class="bubble">${esc(q)}</div>`;
+  if (job && job.rows.length) h += `<details class="buildlog"><summary>HOW THIS ANSWER WAS BUILT · ${job.rows.filter(r => r.kind !== "pending").length} STAGES</summary><div class="livelog">${job.rows.filter(r => r.kind !== "pending").map(r => `<div class="row ${r.kind}"><span class="ic">${r.kind === "bad" ? "✕" : r.kind === "warn" ? "↻" : "✓"}</span><span class="tx">${r.html}</span><span class="tm">${r.tms != null ? (r.tms/1000).toFixed(2) + " s" : ""}</span></div>`).join("")}</div></details>`;
+  if (job && job.lang && job.lang !== "en-IN" && ctx.length && CFG.indic) h += `<div class="langbar">Show answer in: <button class="on" data-lang="en-IN">English</button><button data-lang="${esc(job.lang)}">${esc(CFG.languages[job.lang] || job.lang)}</button></div>`;
+  if (m.source === "kb_rerouted" && ctx.length) h += `<div class="srcnote">The attached article didn't cover this, so OneTap answered from <b>${esc(m.rerouted_to || "a better article")}</b> in the knowledge base.</div>`;
   if (canon) h += `<div class="understood">Understood as: ${esc(canon)}</div>`;
   if (!ctx.length) {
     const why = m.fallback === "no_siis_context" ? "No trusted support article covers this yet, so OneTap won't guess." :
@@ -609,12 +804,15 @@ function render(o, q, body, wall){
   if (ctx.length && m.plan_id) h += `<div class="fb" id="fb"><span>Did this fix it?</span><button class="thumb" data-v="1" aria-label="Yes, helpful">👍</button><button class="thumb" data-v="0" aria-label="No, not helpful">👎</button></div>`;
   $("thread").innerHTML = h;
   window.__plan = m.plan_id;
+  window.__last = {o, q, body, wall, job};
+  document.querySelectorAll(".langbar button").forEach(b => b.onclick = () => showLanguage(b.dataset.lang, b));
   document.querySelectorAll(".guidebtn").forEach(b => b.onclick = () => openGuide(+b.dataset.g));
   document.querySelectorAll(".thumb").forEach(b => b.onclick = () => sendFeedback(b.dataset.v === "1", b));
   requestAnimationFrame(() => document.querySelectorAll(".conf .bar i").forEach(i => i.style.width = i.dataset.w + "%"));
   document.querySelectorAll(".tap").forEach(b => b.onclick = () => openSettings(acts[+b.dataset.k]));
   $("app").scrollTo({top: $("thread").offsetTop - 8, behavior: "smooth"});
-  renderPanel(o, body, wall);
+  if (!(job && job.translatedView)) renderPanel(o, body, wall);
+  refreshImpact(true);
 }
 function screenName(dl){
   const d = (dl.message || dl.description || "Settings").replace(/^(Open|Navigate to|View|Enable|Disable|Adjust|Check|Set)\s+(the\s+)?/i, "").replace(/\s+(settings\s+)?(screen|page)(\s+on device)?$/i, "");
@@ -775,9 +973,38 @@ function drawGuide(){
   };
 }
 
-/* ---------- voice input (Web Speech API) ---------- */
-(() => {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = $("mic");
+/* ---------- voice input: Sarvam (22 Indian languages) or browser speech (English) ---------- */
+function setupVoice(){
+  const mic = $("mic");
+  if (CFG.indic && navigator.mediaDevices && window.MediaRecorder) {
+    mic.title = "Speak in any Indian language (Hindi, Kannada, Tamil, Telugu…)";
+    let rec = null, chunks = [], stopT;
+    mic.onclick = async () => {
+      if (rec && rec.state === "recording") { rec.stop(); return; }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        rec = new MediaRecorder(stream); chunks = [];
+        rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+        rec.onstop = async () => {
+          clearTimeout(stopT); stream.getTracks().forEach(t => t.stop()); mic.classList.remove("rec");
+          const blob = new Blob(chunks, {type: rec.mimeType || "audio/webm"});
+          toast("Understanding your voice…");
+          const fd = new FormData(); fd.append("file", blob, "speech.webm");
+          try {
+            const r = await fetch("/v1/voice", {method: "POST", body: fd}); const v = await r.json();
+            if (!r.ok) throw new Error(v.detail || r.status);
+            if (!v.transcript) { toast("Didn't catch that, please try again"); return; }
+            $("q").value = v.english || v.transcript;
+            run({query: v.english || v.transcript, native: v.transcript, lang: v.language_code, heard: v.language_code && v.language_code !== "en-IN" ? v : null});
+          } catch (e) { toast("Voice failed: " + (e.message || e)); }
+        };
+        rec.start(); mic.classList.add("rec"); toast("🎤 Listening… speak in any Indian language, tap again to stop");
+        stopT = setTimeout(() => rec && rec.state === "recording" && rec.stop(), 15000);
+      } catch (e) { toast(location.protocol === "https:" || location.hostname === "127.0.0.1" || location.hostname === "localhost" ? "Microphone blocked: allow it in the browser" : "Phones need the https link for the microphone"); }
+    };
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { mic.disabled = true; mic.title = "Voice input needs Chrome or Edge"; return; }
   let rec = null;
   mic.onclick = () => {
@@ -789,7 +1016,92 @@ function drawGuide(){
     rec.onend = () => { mic.classList.remove("rec"); rec = null; if ($("q").value.trim() && $("q").value !== before) run(); };
     mic.classList.add("rec"); rec.start(); toast("🎤 Listening… describe the problem");
   };
-})();
+}
+
+/* ---------- answer in the user's language (display only; the API contract stays English) ---------- */
+async function showLanguage(lang, btn){
+  const L = window.__last; if (!L) return;
+  document.querySelectorAll(".langbar button").forEach(b => b.classList.toggle("on", b === btn));
+  if (lang === "en-IN") { render(L.o, L.q, L.body, L.wall, {...L.job, translatedView: true}); return; }
+  if (!L.translated || L.translated.lang !== lang) {
+    toast("Translating the plan…");
+    try {
+      const r = await fetch("/v1/translate-plan", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({lang, response: L.o.response})});
+      const j = await r.json(); if (!r.ok) throw new Error(j.detail || r.status);
+      L.translated = {lang, response: j.response};
+    } catch (e) { toast("Translation failed: " + (e.message || e)); return; }
+  }
+  const o2 = {...L.o, response: L.translated.response};
+  const keep = window.__last;
+  render(o2, L.q, L.body, L.wall, {...L.job, translatedView: true});
+  window.__last = keep;
+  document.querySelectorAll(".langbar button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+}
+
+/* ---------- impact strip + scale test (Feature D) ---------- */
+let IMP = {requests: 0};
+function fmtMin(m){ if (m < 60) return Math.round(m) + " min"; const h = Math.floor(m / 60); return h + " h " + Math.round(m % 60) + " m"; }
+function paintImpact(d, pulse){
+  const set = (id, v) => { const el = $(id); if (el.textContent !== v) { el.textContent = v; if (pulse) { el.classList.remove("pulse"); void el.offsetWidth; el.classList.add("pulse"); } } };
+  set("i-req", String(d.requests));
+  set("i-hit", d.hit_rate == null ? "–" : Math.round(d.hit_rate * 100) + "%");
+  set("i-cost", "₹" + (d.ai_cost_inr < 10 ? d.ai_cost_inr.toFixed(2) : Math.round(d.ai_cost_inr)));
+  set("i-time", fmtMin(d.agent_minutes_saved));
+  set("i-inr", "₹" + Math.round(d.agent_cost_saved_inr).toLocaleString("en-IN"));
+  IMP = d;
+}
+function refreshImpact(pulse){ fetch("/v1/impact").then(r => r.json()).then(d => paintImpact(d, pulse)).catch(() => {}); }
+refreshImpact(false);
+$("assume").onclick = () => { const a = IMP.assumptions || {}; toast(`Each complaint saves ${a.manual_minutes_per_complaint} min of manual triage (problem statement) at ₹${a.agent_inr_per_hour}/agent-hour (assumption), minus engine time. AI cost at ₹${a.usd_inr}/$.`); };
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { $(b.dataset.close).classList.remove("open"); if (b.dataset.close === "maud") stopMirror(); });
+$("scalebtn").onclick = async () => {
+  $("mscale").classList.add("open"); $("sproj").classList.remove("show"); $("sprog").style.width = "0";
+  ["s-done","s-rps","s-p95","s-hit"].forEach(i => $(i).textContent = "–");
+  const r = await fetch("/v1/scale-test?n=1000", {method: "POST"});
+  await readSSE(r, (ev, d) => {
+    if (ev === "progress" || ev === "summary") {
+      $("sprog").style.width = (100 * d.done / d.total) + "%";
+      $("s-done").textContent = d.done.toLocaleString("en-IN"); $("s-rps").textContent = Math.round(d.rps);
+      $("s-p95").textContent = d.p95_ms.toFixed(1); $("s-hit").textContent = Math.round(d.hit_rate * 100) + "%";
+    }
+    if (ev === "summary") {
+      const p = d.projection_10k;
+      $("sproj").innerHTML = `<b>${d.done.toLocaleString("en-IN")}</b> real complaint variants in <b>${(d.done / d.rps).toFixed(1)} s</b> on one laptop: <b>${Math.round(d.rps)}/s</b>, p95 <b>${d.p95_ms.toFixed(1)} ms</b>, ${Math.round(d.hit_rate*100)}% answered from memory.<br><br>Projection from measured cold-path numbers: compiling <b>10,000 scenarios</b> ≈ <b>$${p.compile_cost_usd}</b> (₹${Math.round(p.compile_cost_inr).toLocaleString("en-IN")}) and <b>${p.compile_hours_at_8_parallel} h</b> with 8 parallel workers, once, offline. Serving capacity of this single process ≈ <b>${p.serving_capacity_per_day_millions} million</b> lookups/day.`;
+      $("sproj").classList.add("show");
+    }
+  });
+};
+
+/* ---------- audience mode (Feature A): QR + mirror phones on the projector ---------- */
+let MIRROR = null, MJOBS = {};
+$("audbtn").onclick = async () => {
+  $("maud").classList.add("open");
+  try {
+    const sh = await (await fetch("/v1/share")).json();
+    const url = sh.urls[0] || location.origin + "/?audience=1";
+    $("qrurl").textContent = url;
+    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+    $("qr").innerHTML = qr.createImgTag(8, 0);
+    $("qralt").innerHTML = sh.urls.length > 1 ? "Also: " + sh.urls.slice(1).map(esc).join(" · ") : "";
+    $("qrnote").textContent = url.startsWith("https") ? "Works on any network. Microphone works on phones too." : "Phones must be on the same Wi-Fi as this laptop. Phone microphones need an https tunnel link (see run guide).";
+  } catch (e) { $("qrurl").textContent = "Couldn't get the share link: " + e; }
+  startMirror();
+};
+function startMirror(){
+  if (MIRROR) return;
+  MIRROR = new EventSource("/v1/live");
+  $("livestate").textContent = "MIRRORING AUDIENCE";
+  MIRROR.addEventListener("impact", e => paintImpact(JSON.parse(e.data), true));
+  const evs = ["start","translated","cache","source","understood","catalog","extracted","grounded","reroute","actions","deeplinks","result","error"];
+  evs.forEach(ev => MIRROR.addEventListener(ev, e => {
+    const d = JSON.parse(e.data);
+    if (d.origin !== "phone") return;
+    if (ev === "start") { $("maud").classList.remove("open"); MJOBS[d.rid] = newJob(d.query, {}, {origin: "phone"}); toast("📱 New question from the audience"); return; }
+    const job = MJOBS[d.rid]; if (job) onStage(job, ev, d);
+  }));
+}
+function stopMirror(){ /* keep mirroring after the QR closes: the projector keeps showing audience questions */ }
+if (AUD) { document.title = "OneTap"; }
 
 /* ---------- toast + confetti ---------- */
 let toastT;

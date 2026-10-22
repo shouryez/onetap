@@ -81,8 +81,17 @@ def dl_items(resp: dict) -> list[dict]:
     return items
 
 
-async def judge_steps(row, resp):
-    user = (f"Complaint: {row['original_query']}\n\nReference article:\n{siis_to_text(row['siis_response'])[:6000]}"
+def _article_used(row, meta):
+    """The judge must see the article the plan was actually built from (re-routed plans use another one)."""
+    if meta.get("source") == "kb_rerouted" and meta.get("rerouted_to"):
+        for a in kb().articles:
+            if a["title"] == meta["rerouted_to"]:
+                return siis_to_text(a)
+    return siis_to_text(row["siis_response"])
+
+
+async def judge_steps(row, resp, meta=None):
+    user = (f"Complaint: {row['original_query']}\n\nReference article:\n{_article_used(row, meta or {})[:6000]}"
             f"\n\nPlan:\n{plan_text(resp)}")
     r = await judge_call(STEP_SYS, user, 400)
     return float(r.get("score", 0)), r.get("reason", "")
@@ -123,7 +132,7 @@ async def main(modes):
                         settings_actions += 1
             real_dl += sum(1 for it in items if it["dl"]["deeplink"] != dummy)
             if mode == "ours":
-                s, why = await judge_steps(row, resp)
+                s, why = await judge_steps(row, resp, out["meta"])
                 step_scores.append(s)
                 judge_rows.append({"id": row["id"], "step_score": s, "reason": why, "dl_scores": scores,
                                    "n_goals": len(resp["contexts"]), "fallback": out["meta"].get("fallback")})

@@ -2,10 +2,10 @@
   {
     "id": "row_1",
     "step_score": 1.0,
-    "reason": "The complaint is about screen flashing and going blank when opening Gmail, but the reference and plan address email connection/server issues, and the plan miscategorizes clearing app data under critical instead of auto.",
+    "reason": "The complaint is about screen flashing and going blank when opening Gmail (hardware/display/app crash issue), but the reference article addresses email server connection issues, making the steps partially irrelevant.",
     "dl_scores": [
-      2.0,
-      1.0
+      0.0,
+      2.0
     ],
     "n_goals": 1,
     "fallback": null
@@ -13,7 +13,7 @@
   {
     "id": "row_2",
     "step_score": 2.0,
-    "reason": "The plan is mostly correct and covers the reference steps well, but places the critical force restart step at the end while ignoring the strict ordering contract rule that critical actions must be at the very end of the critical block (which it is, but the categories and order need precise alignment to reference flow).",
+    "reason": "The plan includes the correct troubleshooting steps and follows the category block ordering rule, but 'Contact Service' is incorrectly placed in the manual block rather than at the end with critical actions.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -21,15 +21,15 @@
   {
     "id": "row_3",
     "step_score": 3.0,
-    "reason": "The plan accurately includes steps from the reference article for data transfer workaround and black screen troubleshooting, properly ordered with critical actions at the end.",
+    "reason": "The plan contains steps that are completely accurate, fully supported by the reference, and correctly ordered according to the block categories.",
     "dl_scores": [],
-    "n_goals": 2,
+    "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_4",
-    "step_score": 2.0,
-    "reason": "The plan is mostly correct and covers the relevant steps, but the ordering violates the fixed product rule where critical actions like force restart must be placed at the end of the plan.",
+    "step_score": 3.0,
+    "reason": "The plan accurately follows the reference steps, correctly addresses the complaint, and respects the required category block ordering with critical steps placed at the end.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -37,7 +37,7 @@
   {
     "id": "row_5",
     "step_score": 2.0,
-    "reason": "The plan includes correct manual steps from the reference to open the app and select wireless transfer, but misses the steps to tap Receive/Send and display/scan the QR code to fully resolve the blank screen/scanning issue.",
+    "reason": "The plan includes steps that mix solutions for a visible unresponsive screen and a completely blank screen, but the steps are mostly supported by the reference.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -52,24 +52,26 @@
   },
   {
     "id": "row_8",
-    "step_score": 3.0,
-    "reason": "The reference article is about screen mirroring and casting to a TV, which is completely irrelevant to the customer's complaint about their smartphone's main screen staying small and not filling the display; therefore, an empty plan is correct.",
-    "dl_scores": [],
-    "n_goals": 0,
-    "fallback": "no_match"
+    "step_score": 0.0,
+    "reason": "The reference article is about screen mirroring and casting to a TV, and contains no information about fixing a small main screen size on the smartphone itself.",
+    "dl_scores": [
+      2.0
+    ],
+    "n_goals": 1,
+    "fallback": null
   },
   {
     "id": "row_9",
-    "step_score": 2.0,
-    "reason": "The plan includes all relevant steps from both reference sections for a screen that shows no image and doesn't respond to touch, but it contains duplicate service center and backup steps.",
+    "step_score": 3.0,
+    "reason": "The plan accurately follows the reference steps for a screen that shows no image and doesn't respond to touch, properly categorizing the manual steps in the correct order.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_10",
-    "step_score": 1.0,
-    "reason": "The reference article is exclusively about camera video flickering caused by lighting, which is irrelevant to the user's folding screen hardware issue, making the suggested repair steps partially unsupported in context.",
+    "step_score": 3.0,
+    "reason": "The plan accurately follows the steps from the reference article and correctly adheres to the category ordering rules with critical actions at the end.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -77,31 +79,33 @@
   {
     "id": "row_11",
     "step_score": 3.0,
-    "reason": "The plan accurately includes relevant troubleshooting steps from the reference article for a black screen issue, and follows the correct category ordering rules.",
+    "reason": "The plan accurately includes all relevant steps from the reference article for a black screen issue, correctly placed within the required category blocks and order.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_12",
-    "step_score": 2.0,
-    "reason": "The plan addresses removing shortcuts from the panel mentioned in the reference, but assumes specific UI elements like a pencil and minus icon that are not explicitly detailed in the text.",
-    "dl_scores": [],
+    "step_score": 0.0,
+    "reason": "The reference article does not contain instructions to remove or disable the Quick Access panel or floating circle, making the plan's steps unsupported.",
+    "dl_scores": [
+      2.0
+    ],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_13",
     "step_score": 3.0,
-    "reason": "The plan accurately follows the reference article steps, properly groups manual actions followed by critical actions, and addresses the blank screen issue completely.",
+    "reason": "The plan accurately follows the reference steps, addresses the complaint, and correctly adheres to the ordering contract with manual actions first and critical actions at the end.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_14",
-    "step_score": 3.0,
-    "reason": "The plan accurately captures the repair and service options from the reference article for a cracked screen and follows the correct category ordering.",
+    "step_score": 2.0,
+    "reason": "The plan includes a correct manual action from the reference, but omits other valid service options like Authorized Service Centers or Extended Care Plans.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -109,15 +113,15 @@
   {
     "id": "row_15",
     "step_score": 2.0,
-    "reason": "The plan is mostly correct, but the critical action (Force Restart) is placed at the end instead of the correct logical order within the manual/critical block based on standard sequence, though the ordering contract says critical actions at the end are correct, the step was misplaced relative to the reference flow where force restart comes before charging.",
+    "reason": "The plan includes all relevant troubleshooting steps from the reference and places critical actions at the end, but the manual step to contact service should be ordered after attempting power on/charging according to the reference flow.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_16",
-    "step_score": 2.0,
-    "reason": "The plan covers the correct manual inspection and charging steps from the reference, but places the critical force restart step at the end incorrectly relative to the reference order within the manual/critical workflow.",
+    "step_score": 3.0,
+    "reason": "The plan accurately follows the reference steps, correctly groups them into category blocks, and places critical actions at the end.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null
@@ -125,38 +129,36 @@
   {
     "id": "row_17",
     "step_score": 3.0,
-    "reason": "The plan accurately includes all relevant steps from the reference article for a blank screen and data transfer issue, and correctly categorizes and orders them.",
+    "reason": "The plan contains steps that are fully accurate, supported by the reference, and correctly ordered according to the category blocks.",
     "dl_scores": [],
-    "n_goals": 2,
+    "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_19",
     "step_score": 3.0,
-    "reason": "The plan accurately reflects the reference article's repair options for a cracked and damaged screen, and follows the correct category block ordering.",
+    "reason": "The plan accurately follows the reference article by providing correct service and repair options for a cracked screen.",
     "dl_scores": [],
-    "n_goals": 2,
+    "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_20",
     "step_score": 0.0,
-    "reason": "The reference article is about screen rotation issues, whereas the complaint is about a distorted screen and a diagnostic test, making the plan irrelevant and based on mismatched troubleshooting steps.",
-    "dl_scores": [
-      1.0
-    ],
+    "reason": "The plan addresses screen distortion, but the reference article is entirely about screen rotation issues, making the steps irrelevant to the complaint.",
+    "dl_scores": [],
     "n_goals": 1,
     "fallback": null
   },
   {
     "id": "row_21",
-    "step_score": 2.0,
-    "reason": "The plan includes contradictory steps regarding touch sensitivity and has minor ordering/grouping issues, but the steps are generally supported by the reference text.",
+    "step_score": 3.0,
+    "reason": "The plan accurately follows the reference steps, correctly categorizes actions into auto, manual, and critical blocks, and places critical actions at the end as required.",
     "dl_scores": [
       2.0,
-      1.0,
       2.0,
-      1.0
+      2.0,
+      2.0
     ],
     "n_goals": 1,
     "fallback": null
@@ -164,7 +166,7 @@
   {
     "id": "row_22",
     "step_score": 3.0,
-    "reason": "The plan accurately follows the reference steps, addresses the complaint correctly, and follows the required categorization and ordering rules.",
+    "reason": "The plan accurately captures all troubleshooting steps from the reference article and follows the correct category block ordering rules.",
     "dl_scores": [],
     "n_goals": 1,
     "fallback": null

@@ -62,6 +62,17 @@ BASELINE_BASE_URL = os.getenv("BASELINE_BASE_URL", "https://generativelanguage.g
 BASELINE_API_KEY = os.getenv("BASELINE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
 BASELINE_MODELS = [m.strip() for m in os.getenv("BASELINE_MODELS", "gemini-3.5-flash,gemini-3.6-flash,gemini-flash-lite-latest,gemini-3.5-flash-lite").split(",") if m.strip()]
 
+# ---- Indian languages (Sarvam AI): voice + translation, optional ----
+SARVAM_API_KEY = os.getenv("SARVAM_API_KEY", "")
+
+# ---- Impact dashboard assumptions (shown on screen; override in .env) ----
+MANUAL_MINUTES_PER_COMPLAINT = _f("MANUAL_MINUTES_PER_COMPLAINT", 15)   # from the problem statement
+AGENT_INR_PER_HOUR = _f("AGENT_INR_PER_HOUR", 250)                      # fully-loaded support-agent cost (assumption)
+USD_INR = _f("USD_INR", 84)
+EST_COLD_COST_USD = _f("EST_COLD_COST_USD", 0.0008)                     # measured round-1 average
+EST_COLD_SECONDS = _f("EST_COLD_SECONDS", 3.2)
+PUBLIC_URL = os.getenv("PUBLIC_URL", "")                                 # https tunnel for audience phones
+
 # ---- Embeddings ----
 EMBED_MODEL = os.getenv("EMBED_MODEL", "BAAI/bge-small-en-v1.5")
 
@@ -72,7 +83,9 @@ CACHE_TAU_LOW = _f("CACHE_TAU_LOW", 0.87)  # < CACHE_TAU enables a borderline ba
 
 # ---- Retrieval ----
 KB_MIN_SIM = _f("KB_MIN_SIM", 0.62)  # min similarity to use a KB article when siis_response omitted
-MIN_RELEVANCE = _f("MIN_RELEVANCE", 0.4)  # issues the article barely addresses -> no_match
+MIN_RELEVANCE = _f("MIN_RELEVANCE", 0.4)    # issues the article barely addresses -> no_match
+RESCUE_MIN_RELEVANCE = _f("RESCUE_MIN_RELEVANCE", 0.6)  # a 2nd reading / other article must reach this
+REROUTE_BELOW = _f("REROUTE_BELOW", 0.7)   # given article this weak -> try the best other KB article
 DEEPLINK_TOPK = int(os.getenv("DEEPLINK_TOPK", 8))
 
 DEEPLINKS_PATH = DATA_DIR / "deeplinks.json"

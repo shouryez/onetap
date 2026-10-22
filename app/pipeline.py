@@ -24,9 +24,18 @@ def _fallback_variations(query: str) -> list[str]:
     return [query]
 
 
+async def _emit(emit, event: str, data: dict) -> None:
+    if emit is not None:
+        try:
+            await emit(event, data)
+        except Exception:  # a disconnected viewer must never break the pipeline
+            pass
+
+
 async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True, write_cache: bool = True,
                        debug: bool = False, mapping_mode: str = "ours", lookup_only: bool = False,
-                       fresh_mapping: bool = False, catalog_fallback: bool = False) -> dict:
+                       fresh_mapping: bool = False, catalog_fallback: bool = False, emit=None) -> dict:
+    """emit: optional async callback(event, data) used by the streaming endpoint to show each stage live."""
     t0 = time.perf_counter()
     usage = start_usage()
     trace: dict = {"stages": {}}
@@ -39,6 +48,7 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
         entry, info = cache.lookup(query, siis_text)
         trace["stages"]["cache_lookup_ms"] = _ms(t)
         trace["cache"] = info
+        await _emit(emit, "cache", {**info, "hit": bool(entry), "ms": trace["stages"]["cache_lookup_ms"]})
         if entry:
             out = {
                 "query": query,
@@ -62,6 +72,7 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
     # ------------------------------------------------------------------ source selection
     fallback = None
     source_sim = 1.0
+    siis_provided = bool(siis_text)
     if not siis_text:
         art, sim = kb().best(normalise(query))
         trace["kb_retrieval"] = {"title": art["title"] if art else None, "similarity": round(sim, 3)}
@@ -74,11 +85,21 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
         source_sim = float(embed_one(normalise(query)) @ embed_one(normalise(siis_text[:1500])))
 
     sentences = split_sentences(siis_text) if siis_text else []
+    await _emit(emit, "source", {"kind": "given" if siis_provided else ("kb" if siis_text else "none"),
+                                 "title": siis_text.split("\n", 1)[0][:120] if siis_text else None,
+                                 "similarity": round(source_sim, 3), "sentences": len(sentences)})
 
     # ------------------------------------------------------------------ COLD PATH: enrich ∥ extract
     t = time.perf_counter()
     try:
         enrich_task = asyncio.create_task(stages.enrich(query))
+        if emit is not None:
+            def _on_enrich(tk):
+                if not tk.cancelled() and tk.exception() is None:
+                    r = tk.result() or {}
+                    asyncio.ensure_future(_emit(emit, "understood", {"canonical_query": r.get("canonical_query"),
+                                                                     "topic": r.get("topic"), "ms": _ms(t)}))
+            enrich_task.add_done_callback(_on_enrich)
         if sentences:
             extract_res = await stages.extract(query, sentences)
         else:
@@ -89,6 +110,10 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
         enrich_task.cancel()
         return _error_response(query, t0, usage, str(e))
     trace["stages"]["llm_enrich_extract_ms"] = _ms(t)
+    await _emit(emit, "extracted", {"issues": len(extract_res.get("issues") or []),
+                                    "steps": sum(len(a.get("steps") or []) for i in (extract_res.get("issues") or [])
+                                                 for a in (i.get("actions") or [])),
+                                    "ms": trace["stages"]["llm_enrich_extract_ms"]})
     trace["enrichment"] = {k: enrich_res.get(k) for k in ("canonical_query", "topic")}
 
     variations = _clean_variations(query, enrich_res.get("query_variations") or [])
@@ -101,6 +126,7 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
         except LLMError as e:
             contexts, cinfo = [], {"error": str(e)[:200]}
         trace["catalog_fallback"] = cinfo
+        await _emit(emit, "catalog", cinfo)
         trace["stages"]["catalog_plan_ms"] = _ms(t)
         response = {"contexts": contexts}
         ContextDeeplinkResponse(**response)
@@ -110,7 +136,8 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
             meta["fallback"] = "no_siis_context"
         elif write_cache:
             meta["plan_id"] = get_cache().put(query, variations, response, "", meta, source="catalog",
-                                              aliases=[enrich_res.get("canonical_query") or ""])
+                                              aliases=_aliases(enrich_res))
+            _grow_cloud(meta["plan_id"], query)
         out = {"query": query, "query_variations": variations, "response": response, "meta": meta}
         if debug:
             trace["stages"]["total_ms"] = meta["latency_ms"]
@@ -119,51 +146,61 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
 
     # ------------------------------------------------------------------ ground + normalise
     t = time.perf_counter()
-    article_lower = siis_text.lower()
-    goals_work = []
-    grounding_log = []
-    for issue in (extract_res.get("issues") or [])[:3]:
-        rel = float(issue.get("relevance") or 0)
-        kept_actions, total_steps, kept_steps = [], 0, 0
-        for a in issue.get("actions") or []:
-            steps_out = []
-            for st in a.get("steps") or []:
-                txt = st.get("text", "") if isinstance(st, dict) else str(st)
-                src = st.get("src", []) if isinstance(st, dict) else []
-                total_steps += 1
-                if rules.is_self_referential(txt, a.get("actionName") or ""):
-                    grounding_log.append({"step": txt, "reason": "self_referential"})
-                    continue
-                ok, cov = rules.ground_step(txt, src, sentences, article_lower)
-                if ok:
-                    steps_out.append(txt)
-                    kept_steps += 1
-                else:
-                    grounding_log.append({"step": txt, "coverage": round(cov, 2)})
-            steps_out = rules.clean_steps(steps_out)
-            if not steps_out:
-                continue
-            kept_actions.append({
-                "actionName": rules.fix_action_name(a.get("actionName") or "Follow Steps"),
-                "description": a.get("description") or "",
-                "screen": a.get("screen") or "",
-                "kind": a.get("kind") or "other",
-                "toggle": a.get("toggle") or "none",
-                "steps": steps_out,
-            })
-        if not kept_actions or rel < config.MIN_RELEVANCE:
-            grounding_log.append({"issue_dropped": issue.get("issue"), "relevance": rel})
-            continue
-        goals_work.append({"issue": issue, "relevance": rel, "actions": kept_actions,
-                           "grounded_ratio": kept_steps / max(1, total_steps)})
-    trace["grounding"] = {"dropped": grounding_log}
+    goals_work, grounding_log = _ground(extract_res, sentences, siis_text)
     trace["stages"]["grounding_ms"] = _ms(t)
+    await _emit(emit, "grounded", {"kept": sum(len(a["steps"]) for g in goals_work for a in g["actions"]),
+                                   "dropped": len(grounding_log), "examples": grounding_log[:3]})
+
+    # ------------------------------------------------------------------ second reading before giving up on an article
+    if sentences and not goals_work:
+        t = time.perf_counter()
+        try:
+            res2 = await stages.extract(query, sentences, second_reading=True)
+            g2, log2 = _ground(res2, sentences, siis_text)
+            rel2 = max((g["relevance"] for g in g2), default=0.0)
+            trace["second_reading"] = {"goals": len(g2), "relevance": rel2, "ms": _ms(t)}
+            if g2 and rel2 >= config.RESCUE_MIN_RELEVANCE:   # only a clearly relevant reading may rescue
+                goals_work, grounding_log = g2, log2
+                await _emit(emit, "grounded", {"kept": sum(len(a["steps"]) for g in g2 for a in g["actions"]),
+                                               "dropped": len(log2), "second_reading": True})
+        except LLMError as e:
+            trace["second_reading"] = {"error": str(e)[:150]}
+
+    # ------------------------------------------------------------------ re-route: the given article doesn't cover it
+    source = None
+    best_rel = max((g["relevance"] for g in goals_work), default=0.0)
+    if sentences and best_rel < config.REROUTE_BELOW:          # attached OR auto-picked article too weak
+        t = time.perf_counter()
+        alt, alt_sim = kb().best(normalise(query), exclude_text=siis_text)
+        info = {"given_article_relevance": round(best_rel, 2), "candidate": alt["title"] if alt else None,
+                "similarity": round(alt_sim, 3), "used": False}
+        if alt and alt_sim >= config.KB_MIN_SIM:
+            alt_text = f"{alt['title']}\n{alt['content']}"
+            alt_sentences = split_sentences(alt_text)
+            try:
+                alt_res = await stages.extract(query, alt_sentences)
+                alt_goals, alt_log = _ground(alt_res, alt_sentences, alt_text)
+                alt_rel = max((g["relevance"] for g in alt_goals), default=0.0)
+                info["candidate_relevance"] = round(alt_rel, 2)
+                if alt_goals and alt_rel > best_rel and alt_rel >= config.RESCUE_MIN_RELEVANCE:
+                    goals_work, grounding_log = alt_goals, alt_log + grounding_log
+                    sentences, siis_text, source_sim, source = alt_sentences, alt_text, alt_sim, "kb_rerouted"
+                    info["used"] = True
+            except LLMError as e:
+                info["error"] = str(e)[:150]
+        trace["reroute"] = info
+        await _emit(emit, "reroute", info)
+        trace["stages"]["reroute_ms"] = _ms(t)
+    trace["grounding"] = {"dropped": grounding_log}
 
     # ------------------------------------------------------------------ categorise + map deeplinks
     t = time.perf_counter()
     all_actions = [a for g in goals_work for a in g["actions"]]
     for a in all_actions:
         a["category"] = rules.categorise(a)
+    await _emit(emit, "actions", {"goals": [{"topic": (g["issue"].get("topic") or ""), "actions": [
+        {"actionName": a["actionName"], "category": a["category"], "steps": a["steps"]}
+        for a in rules.order_actions(g["actions"])]} for g in goals_work]})
     _cost_before_map = usage.cost
     tok = BYPASS_DISK_CACHE.set(True) if fresh_mapping else None   # ablation: real mapping latency/cost
     try:
@@ -178,6 +215,11 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
             BYPASS_DISK_CACHE.reset(tok)
     trace["stages"]["deeplink_mapping_ms"] = _ms(t)
     trace["mapping_cost_usd"] = round(usage.cost - _cost_before_map, 6)
+    _drop_contradictions(goals_work, trace)
+    await _emit(emit, "deeplinks", {"links": [{"action": a["actionName"], "message": (a.get("_dl") or {}).get("message"),
+                                               "deeplink": (a.get("_dl") or {}).get("deeplink")}
+                                              for g in goals_work for a in g["actions"] if a.get("_dl")],
+                                    "ms": trace["stages"]["deeplink_mapping_ms"]})
 
     # ------------------------------------------------------------------ format repair (batched LLM, then deterministic)
     t = time.perf_counter()
@@ -223,14 +265,107 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
             "llm_calls": usage.calls, "tokens": {"prompt": usage.prompt_tokens, "completion": usage.completion_tokens}}
     if fallback:
         meta["fallback"] = fallback
+    if source:
+        meta["source"] = source
+        meta["rerouted_to"] = siis_text.split("\n", 1)[0][:120]
     out = {"query": query, "query_variations": variations, "response": response, "meta": meta}
     if write_cache and fallback != "no_siis_context":
         meta["plan_id"] = get_cache().put(query, variations, response, siis_to_text(siis_response), meta,
-                                          aliases=[enrich_res.get("canonical_query") or ""])
+                                          aliases=_aliases(enrich_res))
+        _grow_cloud(meta["plan_id"], query)
     if debug:
         trace["stages"]["total_ms"] = meta["latency_ms"]
         out["trace"] = trace
     return out
+
+
+def _aliases(enrich_res: dict) -> list[str]:
+    """Extra texts stored only for cache matching (the response keeps exactly 8-10 variations)."""
+    return [a for a in [enrich_res.get("canonical_query") or ""] if a.strip()]
+
+
+_BG: set = set()
+
+
+def _grow_cloud(eid: str, query: str) -> None:
+    """After a plan is written back, add ~10 Indian-style rewordings to its cache entry in the background."""
+    async def job():
+        try:
+            get_cache().add_aliases(eid, await stages.extra_variations(query))
+        except Exception:
+            pass
+    task = asyncio.ensure_future(job())
+    _BG.add(task)
+    task.add_done_callback(_BG.discard)
+
+
+async def drain() -> None:
+    """Batch jobs: wait for background cache enrichment before exiting."""
+    while _BG:
+        await asyncio.gather(*list(_BG), return_exceptions=True)
+
+
+def _drop_contradictions(goals_work: list[dict], trace: dict) -> None:
+    """Two actions that flip the SAME setting in opposite directions (onURL vs offURL of one validation key)
+    would cancel out; keep the first (the article's primary advice), drop the later one."""
+    seen: dict[str, str] = {}
+    dropped = []
+    for g in goals_work:
+        keep = []
+        for a in g["actions"]:
+            dl, val = a.get("_dl") or {}, a.get("_val") or {}
+            key, typ = val.get("key"), dl.get("originalType")
+            if key and typ in ("onURL", "offURL"):
+                if seen.get(key) and seen[key] != typ:
+                    dropped.append({"action": a["actionName"], "reason": f"contradicts earlier {seen[key]} on '{key}'"})
+                    continue
+                seen.setdefault(key, typ)
+            keep.append(a)
+        g["actions"] = keep
+    if dropped:
+        trace.setdefault("grounding", {}).setdefault("dropped", []).extend(
+            {"step": d["action"], "reason": d["reason"]} for d in dropped)
+
+
+def _ground(extract_res: dict, sentences: list[str], siis_text: str) -> tuple[list[dict], list[dict]]:
+    """Keep only steps supported by their cited sentences; drop issues the article barely addresses."""
+    article_lower = siis_text.lower()
+    goals_work, grounding_log = [], []
+    for issue in (extract_res.get("issues") or [])[:3]:
+        rel = float(issue.get("relevance") or 0)
+        kept_actions, total_steps, kept_steps = [], 0, 0
+        for a in issue.get("actions") or []:
+            steps_out = []
+            for st in a.get("steps") or []:
+                txt = st.get("text", "") if isinstance(st, dict) else str(st)
+                src = st.get("src", []) if isinstance(st, dict) else []
+                total_steps += 1
+                if rules.is_self_referential(txt, a.get("actionName") or ""):
+                    grounding_log.append({"step": txt, "reason": "self_referential"})
+                    continue
+                ok, cov = rules.ground_step(txt, src, sentences, article_lower)
+                if ok:
+                    steps_out.append(txt)
+                    kept_steps += 1
+                else:
+                    grounding_log.append({"step": txt, "coverage": round(cov, 2)})
+            steps_out = rules.clean_steps(steps_out)
+            if not steps_out:
+                continue
+            kept_actions.append({
+                "actionName": rules.fix_action_name(a.get("actionName") or "Follow Steps"),
+                "description": a.get("description") or "",
+                "screen": a.get("screen") or "",
+                "kind": a.get("kind") or "other",
+                "toggle": a.get("toggle") or "none",
+                "steps": steps_out,
+            })
+        if not kept_actions or rel < config.MIN_RELEVANCE:
+            grounding_log.append({"issue_dropped": issue.get("issue"), "relevance": rel})
+            continue
+        goals_work.append({"issue": issue, "relevance": rel, "actions": kept_actions,
+                           "grounded_ratio": kept_steps / max(1, total_steps)})
+    return goals_work, grounding_log
 
 
 def _error_response(query: str, t0: float, usage, err: str) -> dict:

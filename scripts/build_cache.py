@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app import config  # noqa: E402
 config.LLM_MAX_WAIT_S = 180  # batch job: be patient with rate limits
 from app.cache import get_cache  # noqa: E402
-from app.pipeline import troubleshoot  # noqa: E402
+from app.pipeline import drain, troubleshoot  # noqa: E402
 from app.retrieval import kb  # noqa: E402
 from app.rules import check_goal  # noqa: E402
 from app.retrieval import catalog  # noqa: E402
@@ -44,6 +44,7 @@ async def main(fresh: bool, concurrency: int, out_path: Path):
                   f'fb={out["meta"].get("fallback", "-")} errs={errs or "-"}  ({time.perf_counter() - t:.1f}s)')
 
     await asyncio.gather(*(run(i, r) for i, r in enumerate(rows)))
+    await drain()   # background paraphrase-cloud growth
     with out_path.open("w", encoding="utf-8") as f:
         for o in results:
             f.write(json.dumps(o, ensure_ascii=False) + "\n")

@@ -198,19 +198,20 @@ false hits {f(100 * ng.get('false_hit_rate', 0))}% -> {f(100 * ours_c.get('false
 
 ## 6. Known Edge Cases & System Limitations
 * **Mismatched reference articles.** Several provided SIIS articles do not address the complaint (e.g. an email-server
-  article for a display fault). OneTap extracts only relevant, grounded steps and otherwise returns
-  `contexts: []` + `fallback: no_match`, which lowers coverage by design rather than inventing steps.
+  article for a display fault). OneTap now takes a second reading of a weak article, then re-routes to the best other
+  article in the knowledge base (hybrid chunk search) when the given one scores below 0.7 relevance; a rescue is only
+  accepted at relevance >= 0.6. Remaining cases return `contexts: []` + `fallback: no_match` rather than inventing steps.
+  The extra extraction call on these complaints is what lengthens the cold-path tail (P95) below.
 * **Adversarial near-miss set is LLM-generated.** Some "negatives" describe arguably the same fault, so the reported
   false-hit rate is conservative (an upper bound).
 * **Lexicon-based signatures** (symptom / context / polarity) are English + common Hinglish/typos; unseen slang can miss
   the guard. A learned classifier is the natural next step.
 * **Masked deeplinks.** Where the catalog has no dedicated screen, `voiceassist://dummy_positive` is used with a
   generated 5-7 word description; manual (physical/service) actions never carry deeplinks.
-* **Provider rate limits.** Cold latency depends on the LLM provider tier. The benchmark above ran with quota available.
-  In a later 10-request spot check, after the evaluation runs had used up Groq's *free-tier* daily token cap for
-  `gpt-oss-120b` (200K tokens/day, 8K tokens/min), extraction fell back to smaller models and waited on per-minute limits:
-  cold P50 rose to ~11 s. The serving path now waits at most 3 s before hedging to the next model; production should
-  use a paid tier (limits ~30x higher, same ~$0.001/query).
+* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Cold P95
+  (~8.2 s) is dominated by waits for the per-minute token budget when a re-route adds a second extraction; P50 stays
+  ~2.6 s. The serving path waits at most 3 s before hedging to the next model; production should use a paid tier
+  (limits ~30x higher, same ~$0.001/query).
 * **Settings hierarchy variation** across One UI versions is not modelled; the reverse index deeplink -> plans supports
   targeted recompilation when the catalog changes.
 """

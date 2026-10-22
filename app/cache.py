@@ -94,6 +94,30 @@ class SemanticCache:
         self._index(entry)
         return eid
 
+    def add_aliases(self, eid: str, aliases: list[str]) -> int:
+        """Grow an entry's paraphrase cloud after the fact (background enrichment)."""
+        e = self.entries.get(eid)
+        if not e:
+            return 0
+        have = {normalise(x) for x in [e["query"], *e.get("query_variations", []), *e.get("aliases", [])]}
+        new = [a for a in aliases if a and normalise(a) and normalise(a) not in have]
+        if not new:
+            return 0
+        norms = list(dict.fromkeys(normalise(a) for a in new))
+        vecs = embed_many(norms)
+        sigs = [signature(n) for n in norms]
+        with self.lock:
+            e.setdefault("aliases", []).extend(new)
+            for n in norms:
+                self.exact.setdefault(n + "|" + str(e.get("siis_hash")), eid)
+                self.exact.setdefault(n + "|*", eid)
+            self.keys.extend([eid] * len(norms))
+            self.sigs.extend(sigs)
+            self.profiles.setdefault(eid, set()).update(frozenset(g["symptoms"]) for g in sigs if g["symptoms"])
+            self.mat = np.vstack([self.mat, vecs]) if len(self.mat) else vecs
+        self.save()
+        return len(norms)
+
     # ------------------------------------------------------------------ feedback / eviction
     def remove(self, eid: str) -> bool:
         with self.lock:

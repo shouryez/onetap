@@ -3,7 +3,6 @@ Prompts ask for JSON only; every constraint is re-checked in code (rules.py)."""
 import json
 
 from . import config
-from . import config
 from .llm import chat_json
 
 # ============================================================================ [0] enrichment
@@ -19,6 +18,18 @@ Rules for query_variations (exactly 10):
 - Mix registers: 2 formal, 2 casual, 2 keyword-only (e.g. "screen flicker after update"), 2 frustrated/emotional,
   2 with realistic typos or missing punctuation.
 - Each must be clearly different in wording from the others. No URLs, no numbering."""
+
+EXTRA_SYS = """Write 10 MORE ways real Indian users would type or SAY this same phone complaint. Same problem, same
+on/off direction and context; never add symptoms. Styles: 2 very short (3-6 words), 2 Hinglish in Latin script
+(e.g. "screen baar baar black ho jaati hai"), 2 Indian-English phrasing, 2 like a voice transcript (no punctuation,
+filler words), 2 naming only the main symptom in different words (blinking / flashing / going dark...).
+Return ONLY JSON {"variations": ["...", ...]}"""
+
+
+async def extra_variations(query: str) -> list[str]:
+    """Cache-only rewordings (Hinglish, short, voice-style). Runs in the background, off the response path."""
+    r = await chat_json(EXTRA_SYS, f"Complaint: {query}", model=config.LLM_FAST_MODEL, max_tokens=900)
+    return [str(v) for v in (r.get("variations") or []) if isinstance(v, (str, int))][:12]
 
 
 async def enrich(query: str) -> dict:
@@ -90,8 +101,11 @@ def number_sentences(sentences: list[str]) -> str:
     return "\n".join(f"[{i}] {s}" for i, s in enumerate(sentences, 1))
 
 
-async def extract(query: str, sentences: list[str]) -> dict:
+async def extract(query: str, sentences: list[str], second_reading: bool = False) -> dict:
     user = f"Complaint: {query}\n\nReference article (numbered sentences):\n{number_sentences(sentences)}"
+    if second_reading:   # an independent second sample (also a distinct memo key)
+        user += ("\n\nSecond reading: read the whole article again. Service, repair, warranty and escalation "
+                 "options DO count as relevant actions when the article is about this problem.")
     return await chat_json(EXTRACT_SYS, user, max_tokens=6000)
 
 

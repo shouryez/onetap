@@ -9,19 +9,19 @@
 ---
 
 ## 1. Schema & Rule Compliance
-Evaluated on `results.jsonl` (all 20 provided scenarios, 21 goals).
+Evaluated on `results.jsonl` (all 20 provided scenarios, 19 goals).
 
 | Metric | Target | Measured Value |
 | :--- | :--- | :--- |
 | Schema-valid output lines | >= 99% | 100.0% |
 | Rule compliance (Goal / Title / Description syntax) | >= 95% | 100.0% |
 | Absolute URL leaks | 0 | 0 |
-| Deeplink catalog validity (exact URI match) | 100% | 100.0% (7 deeplinks) |
-| Auto actions carrying valid actionable deeplink | >= 90% | 100.0% (80.0% dedicated catalog entry, rest `dummy_positive`) |
+| Deeplink catalog validity (exact URI match) | 100% | 100.0% (8 deeplinks) |
+| Auto actions carrying valid actionable deeplink | >= 90% | 100.0% (50.0% dedicated catalog entry, rest `dummy_positive`) |
 | `query_variations` with 8-10 items | 100% | 100.0% |
 
-Honest `no_match` responses (reference article does not address the complaint): 2 / 20.
-Multi-intent complaints answered with more than one Goal: 3.
+Honest `no_match` responses (reference article does not address the complaint): 1 / 20.
+Multi-intent complaints answered with more than one Goal: 0.
 
 ---
 
@@ -31,7 +31,7 @@ LLM-as-judge (Gemini Flash family, a different model family from the generator, 
 | Evaluation Metric | Scale / Anchor | Score |
 | :--- | :--- | :--- |
 | Step accuracy (completeness, correctness, ordering) | 0.0 - 3.0 | 2.25 |
-| Deeplink relevance (exact target screen vs. parent menu) | 0.0 - 2.0 | 1.43 (n=7) |
+| Deeplink relevance (exact target screen vs. parent menu) | 0.0 - 2.0 | 1.75 (n=8) |
 
 ---
 
@@ -40,15 +40,15 @@ Client-side wall clock over HTTP on localhost (server-side `meta.latency_ms` in 
 
 | Execution Path | Target (P95) | P50 (ms) | P95 (ms) |
 | :--- | :--- | :--- | :--- |
-| Cache hit - exact query match (N=40) | <= 300 ms | 0.9 [0] | 1.1 [0] |
-| Cache hit - unseen semantic paraphrase (N=80) | <= 300 ms | 8.3 [7] | 10.4 [9] |
-| Cold query - full pipeline extraction & mapping (N=30) | <= 8000 ms | 4085 [2026] | 5266 [3210] |
+| Cache hit - exact query match (N=40) | <= 300 ms | 1.2 [0] | 1.4 [0] |
+| Cache hit - unseen semantic paraphrase (N=80) | <= 300 ms | 1.3 [0] | 1.7 [0] |
+| Cold query - full pipeline extraction & mapping (N=20) | <= 8000 ms | 2631 [2620] | 8221 [8218] |
 
 Cold requests were spaced 18 s apart (provider tokens-per-minute limit), so each opened a new HTTP connection to
 `localhost`; on Windows that first tries IPv6 and adds ~2 s per new connection (measured: 2297 ms vs 218 ms via
 `127.0.0.1`). The bracketed server-side numbers are the pipeline itself. `scripts/bench.py` now defaults to `127.0.0.1`.
 
-Cache lookup alone (embedding + matrix search + guard, in-process): P50 6.84 ms · P95 8.82 ms.
+Cache lookup alone (embedding + matrix search + guard, in-process): P50 6.44 ms · P95 8.22 ms.
 
 ---
 
@@ -56,7 +56,7 @@ Cache lookup alone (embedding + matrix search + guard, in-process): P50 6.84 ms 
 
 | Metric Item | Target | Measured Value |
 | :--- | :--- | :--- |
-| Cold query average inference cost | Tracked | $0.00080 |
+| Cold query average inference cost | Tracked | $0.00128 |
 | Cache hit inference cost | $0.00 | $0.00 |
 | Semantic cache hit rate (on unseen paraphrases) | >= 80% | 82.5% (correct-article hits 82.5%) |
 | False-hit rate on adversarial near-miss / out-of-domain queries | (ours) | 10.0% (without Symptom-Signature Guard: 44.0%) |
@@ -66,9 +66,9 @@ Threshold sweep (query-only lookups, guard on):
 
 | tau | hit rate | false-hit rate |
 | :--- | :--- | :--- |
-| 0.8 | 95.9% | 32.0% |
-| 0.83 | 93.8% | 24.0% |
-| 0.86 | 84.5% | 12.0% |
+| 0.8 | 95.9% | 48.0% |
+| 0.83 | 93.8% | 34.0% |
+| 0.86 | 84.5% | 14.0% |
 | 0.89 | 79.4% | 4.0% |
 | 0.92 | 54.6% | 2.0% |
 
@@ -82,7 +82,7 @@ Only the deeplink stage varies (identical extraction), mapping LLM calls made fr
 | Architecture Variant | Step Accuracy | Deeplink relevance (0-2) | Mapping latency P95 | Cost / Query | Key Observations |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Baseline: Full LLM Deeplink Mapping (whole catalog in prompt) | 2.25 | 1.17 (n=6, 3 catalog) | 16897 ms | $0.00091 | Large prompt per action; picks parent menus; slowest/most expensive |
-| **OneTap: exact-leaf match + hybrid + depth rerank + closed-set LLM** | 2.25 | 1.43 (n=7, 6 catalog) | 633 ms | $0.00002 | Deterministic when the leaf screen is unambiguous; LLM only chooses among candidates |
+| **OneTap: exact-leaf match + hybrid + depth rerank + closed-set LLM** | 2.25 | 1.75 (n=8, 4 catalog) | 1027 ms | $0.00002 | Deterministic when the leaf screen is unambiguous; LLM only chooses among candidates |
 
 **Ground-truth deeplink resolution benchmark** (`scripts/eval_deeplinks.py`): 24 catalog targets (open-page / enable /
 disable, stratified). An LLM wrote a realistic action for each without the catalog wording; every variant must recover
@@ -91,9 +91,9 @@ the exact catalog entry.
 | Variant | Accuracy@1 (exact entry) | Right screen, wrong on/off twin | No deeplink | Latency P50 / P95 | Cost / action |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Baseline: Full LLM Deeplink Mapping (whole catalog in prompt) | 62.5% | 8.3% | 16.7% | 1104 / 1381 ms | $0.00261 |
-| Variant A: Hybrid BM25 + Dense Embedding Retrieval (top-1) | 91.7% | 8.3% | 0.0% | 1 / 8 ms | $0.00000 |
-| Variant B: Pure Rules-Based Deeplink Mapping (BM25 keyword) | 91.7% | 4.2% | 0.0% | 1 / 1 ms | $0.00000 |
-| **OneTap: exact-leaf match + hybrid + depth rerank + closed-set LLM** | 95.8% | 0.0% | 4.2% | 518 / 5438 ms | $0.00006 |
+| Variant A: Hybrid BM25 + Dense Embedding Retrieval (top-1) | 91.7% | 8.3% | 0.0% | 1 / 10 ms | $0.00000 |
+| Variant B: Pure Rules-Based Deeplink Mapping (BM25 keyword) | 91.7% | 4.2% | 0.0% | 1 / 2 ms | $0.00000 |
+| **OneTap: exact-leaf match + hybrid + depth rerank + closed-set LLM** | 95.8% | 0.0% | 4.2% | 770 / 6250 ms | $0.00007 |
 
 Symptom-Signature Guard ablation (same tau): hit rate 96.9% -> 82.5%,
 false hits 44.0% -> 10.0%.
@@ -102,18 +102,19 @@ false hits 44.0% -> 10.0%.
 
 ## 6. Known Edge Cases & System Limitations
 * **Mismatched reference articles.** Several provided SIIS articles do not address the complaint (e.g. an email-server
-  article for a display fault). OneTap extracts only relevant, grounded steps and otherwise returns
-  `contexts: []` + `fallback: no_match`, which lowers coverage by design rather than inventing steps.
+  article for a display fault). OneTap now takes a second reading of a weak article, then re-routes to the best other
+  article in the knowledge base (hybrid chunk search) when the given one scores below 0.7 relevance; a rescue is only
+  accepted at relevance >= 0.6. Remaining cases return `contexts: []` + `fallback: no_match` rather than inventing steps.
+  The extra extraction call on these complaints is what lengthens the cold-path tail (P95) below.
 * **Adversarial near-miss set is LLM-generated.** Some "negatives" describe arguably the same fault, so the reported
   false-hit rate is conservative (an upper bound).
 * **Lexicon-based signatures** (symptom / context / polarity) are English + common Hinglish/typos; unseen slang can miss
   the guard. A learned classifier is the natural next step.
 * **Masked deeplinks.** Where the catalog has no dedicated screen, `voiceassist://dummy_positive` is used with a
   generated 5-7 word description; manual (physical/service) actions never carry deeplinks.
-* **Provider rate limits.** Cold latency depends on the LLM provider tier. The benchmark above ran with quota available.
-  In a later 10-request spot check, after the evaluation runs had used up Groq's *free-tier* daily token cap for
-  `gpt-oss-120b` (200K tokens/day, 8K tokens/min), extraction fell back to smaller models and waited on per-minute limits:
-  cold P50 rose to ~11 s. The serving path now waits at most 3 s before hedging to the next model; production should
-  use a paid tier (limits ~30x higher, same ~$0.001/query).
+* **Provider rate limits.** All numbers here were measured on Groq's *free tier* (8K tokens/min per model). Cold P95
+  (~8.2 s) is dominated by waits for the per-minute token budget when a re-route adds a second extraction; P50 stays
+  ~2.6 s. The serving path waits at most 3 s before hedging to the next model; production should use a paid tier
+  (limits ~30x higher, same ~$0.001/query).
 * **Settings hierarchy variation** across One UI versions is not modelled; the reverse index deeplink -> plans supports
   targeted recompilation when the catalog changes.

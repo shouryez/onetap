@@ -107,7 +107,12 @@ main>*{min-width:0}
 .toggles{display:flex;gap:6px;flex:1;flex-wrap:wrap}
 .tg{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-2);border:1px solid var(--rule);border-radius:999px;padding:3px 9px;cursor:pointer;user-select:none;transition:all .2s}
 .tg input{display:none} .tg.on{border-color:var(--ink);color:var(--ink);background:var(--paper-2)}
-.go{border:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center;transition:transform .15s var(--ease),background .2s}
+.modes{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:2px;gap:2px}
+.modes button{border:0;background:transparent;border-radius:999px;padding:3px 9px;font-size:11.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.modes button.on{background:var(--screen-card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.modes button[data-mode="live"].on{color:var(--signal-ink)}
+body.aud .modes{display:none}
+.go{white-space:nowrap;flex:none;border:0;background:var(--ink);color:var(--paper);border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer;display:flex;gap:8px;align-items:center;transition:transform .15s var(--ease),background .2s}
 .go:hover{transform:translateY(-1px)} .go:active{transform:scale(.97)} .go:disabled{opacity:.6;cursor:wait}
 .go .arrow{transition:transform .3s var(--ease)} .go:hover .arrow{transform:translateX(3px)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 2px 2px;scrollbar-width:none}
@@ -496,9 +501,13 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
           </div>
           <div class="crow">
             <div class="toggles">
-              <label class="tg" title="Skip the semantic cache and run the full pipeline"><input type="checkbox" id="nocache">bypass cache</label>
-              <label class="tg" title="Also skip memoised AI answers (true cold path)"><input type="checkbox" id="fresh">fresh AI</label>
-              <label class="tg on" title="If no article covers the problem, suggest matching Settings from the official catalog"><input type="checkbox" id="catfb" checked>catalog</label>
+              <div class="modes" role="radiogroup" aria-label="Answer mode">
+                <button type="button" class="on" data-mode="memory" role="radio" aria-checked="true" title="Normal: a problem seen before is answered from memory (~ms, ₹0); a new one runs the AI once and is saved">Memory</button>
+                <button type="button" data-mode="replay" role="radio" aria-checked="false" title="Skip the memory and show every pipeline stage; AI replies are replayed from the log, so ₹0 for questions asked before">Replay ₹0</button>
+                <button type="button" data-mode="live" role="radio" aria-checked="false" title="Skip both memories: every AI step is a live call (a few seconds, about ₹0.10)">Live AI</button>
+              </div>
+              <input type="checkbox" id="nocache" hidden><input type="checkbox" id="fresh" hidden>
+              <label class="tg on" id="catwrap" title="Only used when no help article covers the problem: suggest matching Settings from the official catalog instead of answering 'no match'"><input type="checkbox" id="catfb" checked>catalog</label>
             </div>
             <button class="mic" id="mic" type="button" title="Speak your problem" aria-label="Voice input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
             <button class="go" id="go">Fix it <span class="arrow">→</span></button>
@@ -685,7 +694,14 @@ document.querySelectorAll(".src-tabs button").forEach(b => b.onclick = () => {
   src = b.dataset.src;
   document.querySelectorAll(".src-tabs button").forEach(x => x.classList.toggle("on", x === b));
   document.querySelectorAll(".src-pane").forEach(p => p.classList.toggle("on", p.dataset.pane === src));
+  $("catwrap").style.display = src === "auto" ? "" : "none";   // an attached article always exists in the other tabs
 });
+/* answer mode: the only meaningful mixes of "skip memory" and "skip AI-reply log" */
+function setMode(m){
+  setCheck("nocache", m !== "memory"); setCheck("fresh", m === "live");
+  document.querySelectorAll(".modes button").forEach(b => { b.classList.toggle("on", b.dataset.mode === m); b.setAttribute("aria-checked", b.dataset.mode === m); });
+}
+document.querySelectorAll(".modes button").forEach(b => b.onclick = () => setMode(b.dataset.mode));
 document.querySelectorAll(".tg input").forEach(i => i.onchange = () => i.parentElement.classList.toggle("on", i.checked));
 const countWords = () => { const n = $("pasted").value.trim().split(/\s+/).filter(Boolean).length; $("pcount").textContent = n + " words"; };
 $("pasted").addEventListener("input", countWords);
@@ -707,12 +723,12 @@ Update your apps and software: Navigate to Settings, tap Software update, and th
 Restart your phone: Press and hold the Side button, then tap Restart.
 If the problem continues, contact customer support or visit a service center.`;
 const SCEN = [
-  {tag:"cache hit", c:"t-hit", t:"Instant answer", q:"my screen went black after a month and it won't even turn on", shows:"Reworded known problem → served from cache in ms, $0", src:"auto"},
+  {tag:"cache hit", c:"t-hit", t:"Instant answer", q:"my screen went black after a month and it won't even turn on", shows:"Reworded known problem → served from cache in ms, $0", src:"auto", mode:"memory"},
   {tag:"one-tap toggle", c:"t-ai", t:"Enable the right switch", q:"touch stopped working properly after I put on a new screen protector", shows:"Grounded plan + Touch sensitivity ON + validation", src:"sample", row:"row_21", live:true},
   {tag:"direction", c:"t-ai", t:"…or the opposite one", q:"my screen registers touches I didn't make and I don't use any screen guard", shows:"Same article, different complaint → the OFF twin", src:"sample", row:"row_21", live:true},
   {tag:"guard", c:"t-guard", t:"Look-alike, different fix", q:"My tablet screen flashes and then goes blank whenever I scroll a web page in the browser", shows:"0.88 similar to a cached Gmail case, but a different context → guard rejects it", src:"auto"},
   {tag:"multi-intent", c:"t-ai", t:"Three problems, one message", q:"My Nexa Fold X1 screen is cracked again right where it folds. The touch doesn't work on certain parts of the screen. I can hardly see anything on the display.", shows:"Split into separate goals, duplicates merged", src:"sample", row:"row_19"},
-  {tag:"hinglish", c:"t-hit", t:"Speaks your language", q:"phone screen bahut flicker kar raha hai aur black ho jata hai", shows:"Typos + Hinglish normalised before matching", src:"auto"},
+  {tag:"hinglish", c:"t-hit", t:"Speaks your language", q:"phone screen bahut flicker kar raha hai aur black ho jata hai", shows:"Typos + Hinglish normalised before matching", src:"auto", mode:"memory"},
   {tag:"catalog", c:"t-cat", t:"No article? Real Settings only", q:"my battery drains really fast even overnight", shows:"Plan built only from the official Settings catalog", src:"auto", live:true},
   {tag:"paste article", c:"t-cat", t:"Bring your own help page", q:"battery dies super fast even when I'm not using the phone", shows:"Any pasted article becomes a grounded plan", src:"paste", article:BATTERY_ARTICLE, live:true},
   {tag:"no match", c:"t-no", t:"Refuses to guess", q:"my battery drains really fast", shows:"Article doesn't cover it → honest no_match", src:"sample", row:"row_21", nocat:true},
@@ -746,6 +762,7 @@ async function runScenario(i){
   if (sc.src === "sample") { const ix = articleIndexFor(sc.row); if (ix >= 0) $("article").value = ix; }
   if (sc.src === "paste") { $("pasted").value = sc.article; countWords(); }
   setCheck("catfb", !sc.nocat);
+  if (sc.mode) setMode(sc.mode);
   document.querySelector(".phone-wrap").scrollIntoView({behavior:"smooth", block:"start"});
   await run(); b.classList.remove("running"); markDone(i);
 }
@@ -758,7 +775,7 @@ SCEN.forEach((sc, i) => {
 markDone();
 $("sreset").onclick = () => { DONE.clear(); markDone(); };
 document.querySelectorAll(".st-q").forEach(b => b.onclick = () => { $("q").value = b.dataset.q; setSrc("auto"); run(); });
-function setCheck(id, v){ const i=$(id); i.checked=v; i.parentElement.classList.toggle("on", v); }
+function setCheck(id, v){ const i=$(id); i.checked=v; if (i.parentElement.classList.contains("tg")) i.parentElement.classList.toggle("on", v); }
 function setSrc(s){ document.querySelector(`.src-tabs [data-src="${s}"]`).click(); }
 
 /* ---------- run ---------- */

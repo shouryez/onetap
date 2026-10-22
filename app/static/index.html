@@ -989,7 +989,8 @@ function setupVoice(){
           clearTimeout(stopT); stream.getTracks().forEach(t => t.stop()); mic.classList.remove("rec");
           const blob = new Blob(chunks, {type: rec.mimeType || "audio/webm"});
           toast("Understanding your voice…");
-          const fd = new FormData(); fd.append("file", blob, "speech.webm");
+          const ext = /mp4|m4a|aac/.test(blob.type) ? "mp4" : /ogg/.test(blob.type) ? "ogg" : "webm";
+          const fd = new FormData(); fd.append("file", blob, "speech." + ext);
           try {
             const r = await fetch("/v1/voice", {method: "POST", body: fd}); const v = await r.json();
             if (!r.ok) throw new Error(v.detail || r.status);

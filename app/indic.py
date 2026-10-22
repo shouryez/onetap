@@ -16,6 +16,8 @@ _INDIC = re.compile(r"[ऀ-෿]")          # Devanagari .. Sinhala blocks (all I
 LANG_NAMES = {"hi-IN": "Hindi", "kn-IN": "Kannada", "ta-IN": "Tamil", "te-IN": "Telugu", "ml-IN": "Malayalam",
               "mr-IN": "Marathi", "bn-IN": "Bengali", "gu-IN": "Gujarati", "pa-IN": "Punjabi", "od-IN": "Odia",
               "en-IN": "English"}
+_STT_TYPES = {"audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/wave", "audio/aac", "audio/ogg",
+              "audio/opus", "audio/flac", "audio/mp4", "audio/x-m4a", "audio/amr", "audio/webm", "video/webm"}
 _client: httpx.AsyncClient | None = None
 
 
@@ -50,6 +52,10 @@ async def _post(path: str, **kw) -> dict:
 
 async def speech_to_text(audio: bytes, filename: str = "speech.webm", content_type: str = "audio/webm") -> dict:
     """-> {"transcript": native text, "language_code": "hi-IN"|...}"""
+    # browsers send e.g. "audio/webm;codecs=opus"; Sarvam only accepts the bare type
+    content_type = (content_type or "").split(";")[0].strip().lower()
+    if content_type not in _STT_TYPES:
+        content_type = "application/octet-stream"
     j = await _post("/speech-to-text", files={"file": (filename, audio, content_type)},
                     data={"model": "saaras:v3", "mode": "transcribe", "language_code": "unknown"})
     return {"transcript": (j.get("transcript") or "").strip(), "language_code": j.get("language_code") or "unknown"}

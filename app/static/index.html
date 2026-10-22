@@ -49,22 +49,28 @@ header{max-width:1360px;margin:0 auto;padding:22px 24px 8px;display:flex;align-i
 .tagline{color:var(--ink-2);max-width:560px;font-size:14.5px}
 .tagline em{font-family:var(--serif);font-style:italic;color:var(--ink)}
 .hdr-right{margin-left:auto;display:flex;gap:10px;align-items:center}
-.stamp{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;border:1.5px solid var(--ink);padding:6px 9px;border-radius:3px;transform:rotate(-2deg)}
+.headline{display:flex;flex-direction:column;gap:3px;padding-bottom:2px}
+.kicker{font:600 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--signal-ink)}
+.pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border:1px solid var(--rule);background:var(--card);
+  border-radius:999px;font:600 12.5px var(--sans);cursor:pointer;white-space:nowrap;transition:border-color .2s,transform .15s var(--ease)}
+.pill:hover{border-color:var(--ink);transform:translateY(-1px)}
+.pill.sq{width:36px;padding:0;justify-content:center;font-size:14px}
+.pill.live{border-color:var(--ok);color:var(--ok)}
 .iconbtn{border:1px solid var(--rule);background:var(--card);border-radius:999px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
 
 /* ---------------- how-it-works strip ---------------- */
-.how{max-width:1360px;margin:10px auto 0;padding:0 24px}
+.how{margin:0 0 18px}
 .how-inner{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--rule);background:var(--card);border-radius:14px;overflow:hidden}
-.how-step{padding:12px 14px;border-right:1px dashed var(--rule);position:relative;transition:background .4s var(--ease)}
+.how-step{padding:10px 11px;border-right:1px dashed var(--rule);position:relative;transition:background .4s var(--ease)}
 .how-step:last-child{border-right:0}
 .how-step .n{font:500 11px var(--mono);color:var(--muted);letter-spacing:.08em}
 .how-step h4{margin:2px 0 2px;font:600 14px var(--sans)}
-.how-step p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.how-step p{margin:0;font-size:11.5px;color:var(--ink-2);line-height:1.35}
 .how-step.lit{background:var(--signal-soft)} .how-step.lit .n{color:var(--signal-ink)}
 .how-step.skip{opacity:.38}
 .how-step.lit::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--signal);transform-origin:left;animation:grow .6s var(--ease)}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media (max-width:900px){.how-inner{grid-template-columns:1fr 1fr}.how-step{border-bottom:1px dashed var(--rule)}}
+@media (max-width:1240px){.how-inner{grid-template-columns:repeat(3,1fr)}.how-step{border-bottom:1px dashed var(--rule)}}
 
 /* ---------------- layout ---------------- */
 main{max-width:1360px;margin:0 auto;padding:18px 24px 40px;display:grid;grid-template-columns:420px 1fr;gap:28px;align-items:start}
@@ -233,22 +239,26 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 .scen-head{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;flex-wrap:wrap}
 .scen-head h2{font:italic 500 22px var(--serif);margin:0}
 .scen-head p{margin:0;color:var(--ink-2);font-size:13px}
-.scen-nav{margin-left:auto;display:flex;gap:6px}
-.scen-nav button{width:32px;height:32px;border-radius:50%;border:1px solid var(--rule);background:var(--card);cursor:pointer;transition:all .2s var(--ease)}
-.scen-nav button:hover{border-color:var(--ink);transform:translateY(-1px)}
-.scen-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(232px,1fr);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:4px 2px 12px;scrollbar-width:thin;scrollbar-color:var(--rule) transparent;-webkit-mask-image:linear-gradient(90deg,#000 94%,transparent);mask-image:linear-gradient(90deg,#000 94%,transparent)}
-.scen-row::-webkit-scrollbar{height:6px}.scen-row::-webkit-scrollbar-track{background:transparent}.scen-row::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
-.scard{scroll-snap-align:start;text-align:left;border:1px solid var(--rule);background:var(--card);border-radius:18px;padding:13px 15px 12px;cursor:pointer;
-  position:relative;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s;animation:fadeUp .5s var(--ease) both;animation-delay:calc(var(--i)*60ms)}
-.scard:hover{transform:translateY(-4px) rotate(-.4deg);box-shadow:0 18px 30px -18px rgba(23,20,15,.45);border-color:var(--ink)}
-.scard::after{content:"→";position:absolute;right:14px;top:10px;font:500 15px var(--mono);opacity:0;transform:translateX(-6px);transition:all .3s var(--ease)}
-.scard:hover::after{opacity:1;transform:none}
+.scen-nav{margin-left:auto;display:flex;gap:10px;align-items:center}
+.sprog{font:500 12px var(--mono);color:var(--ink-2)}
+.scen-nav button{border:0;background:none;color:var(--muted);font:500 12px var(--mono);cursor:pointer;text-decoration:underline;padding:0}
+.scen-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media (max-width:1100px){.scen-row{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.scen-row{grid-template-columns:1fr 1fr}}
+.scard{text-align:left;border:1px solid var(--rule);background:var(--card);border-radius:16px;padding:11px 13px 11px 13px;cursor:pointer;
+  position:relative;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s;animation:fadeUp .5s var(--ease) both;animation-delay:calc(var(--i)*50ms)}
+.scard:hover{transform:translateY(-3px);box-shadow:0 14px 26px -18px rgba(23,20,15,.45);border-color:var(--ink)}
+.scard .key{position:absolute;right:10px;top:9px;width:22px;height:22px;border-radius:6px;border:1px solid var(--rule);display:grid;place-items:center;font:500 11px var(--mono);color:var(--muted);background:var(--paper)}
+.scard.done .key{background:var(--ok);border-color:var(--ok);color:#fff}
+.scard.done .key::before{content:"✓"}
+.scard.done .key span{display:none}
+.scard .tagrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding-right:28px}
+.scard .live{font:600 10px var(--mono);letter-spacing:.06em;color:var(--ok)}
 .scard .tag{font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:4px;display:inline-block}
 .t-hit{background:var(--ok-soft);color:var(--ok)} .t-guard{background:var(--crit-soft);color:var(--crit)} .t-ai{background:var(--signal-soft);color:var(--signal-ink)} .t-cat{background:var(--man-soft);color:var(--man)} .t-no{background:var(--paper-2);color:var(--ink-2)}
 .scard b{display:block;font:600 14.5px var(--sans);margin:8px 0 3px}
 .scard q{display:block;font:italic 400 13px/1.35 var(--serif);color:var(--ink-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.scard .shows{font-size:11.5px;color:var(--muted);margin-top:7px}
+.scard .shows{font-size:11.5px;color:var(--muted);margin-top:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .scard.running{border-color:var(--signal)} .scard.running .tag{animation:blink 1s infinite}
 
 /* ---------- voice ---------- */
@@ -300,8 +310,8 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 
 /* ---------- toast / confetti / spotlight / tilt ---------- */
 .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,160%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:999px;font-size:13.5px;
-  transition:transform .45s var(--ease);z-index:50;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);max-width:90vw}
-.toast.show{transform:translate(-50%,0)}
+  transition:transform .45s var(--ease),opacity .3s;z-index:90;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);max-width:90vw;opacity:0;pointer-events:none}
+.toast.show{transform:translate(-50%,0);opacity:1}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:60;width:100vw;height:100vh}
 .panel{overflow:hidden}
 .panel::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
@@ -326,6 +336,31 @@ footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--muted);fon
 .imp .v.pulse{animation:impulse .8s var(--ease)}
 @keyframes impulse{30%{color:var(--signal);transform:scale(1.06)}}
 @media (max-width:900px){.impact-inner{flex-wrap:wrap}.imp{flex:1 1 45%}}
+
+/* ---------- real phone log ---------- */
+.realphone{display:none;border:1px solid var(--ok);background:var(--ok-soft);border-radius:14px;padding:11px 14px;margin:0 0 16px}
+.realphone.on{display:block;animation:fadeUp .4s var(--ease)}
+.realphone h5{margin:0 0 6px;font:600 13px var(--sans);display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.realphone .rpsub{font:400 12px var(--sans);color:var(--ink-2);margin-left:8px}
+.rprow{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:baseline;font-size:13px;padding:4px 0;border-top:1px dashed color-mix(in srgb,var(--ok) 35%,transparent);animation:fadeUp .35s var(--ease)}
+.rprow:first-child{border-top:0}
+.rprow .t{font:500 11px var(--mono);color:var(--muted)}
+.rprow .r{font:600 11px var(--mono);letter-spacing:.04em}
+.rprow .r.ok{color:var(--ok)} .rprow .r.open{color:var(--ink-2)} .rprow .r.no{color:var(--crit)}
+.rprow small{display:block;color:var(--muted);font:400 11px var(--mono)}
+
+/* ---------- phone starter ---------- */
+.starter{margin:16px 2px 0;animation:fadeUp .5s var(--ease)}
+.st-h{font:500 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.st-q{display:block;width:100%;text-align:left;border:1px dashed var(--rule);background:transparent;border-radius:14px;padding:9px 12px;margin-bottom:7px;
+  font:italic 400 13.5px/1.35 var(--serif);color:var(--ink-2);cursor:pointer;transition:all .2s var(--ease)}
+.st-q:hover{border-style:solid;border-color:var(--signal);color:var(--ink)}
+.st-tag{font:600 9.5px var(--mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--ok);margin-left:4px}
+.st-mic{font-size:12px;color:var(--ink-2);margin-top:10px;padding:9px 12px;background:var(--paper-2);border-radius:12px}
+
+/* ---------- presenter shortcuts ---------- */
+.keys{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;align-items:center;font-size:14px}
+kbd{font:500 12px var(--mono);border:1px solid var(--rule);border-bottom-width:2px;border-radius:6px;padding:2px 7px;background:var(--paper)}
 
 /* ---------- modal (scale test, audience QR) ---------- */
 .modal{position:fixed;inset:0;background:rgba(15,13,10,.55);display:none;place-items:center;z-index:80;padding:16px;backdrop-filter:blur(3px)}
@@ -406,25 +441,17 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
 <body>
 <header>
   <div class="brand"><h1><b>One</b>Tap</h1><span class="dot" aria-hidden="true"></span></div>
-  <div class="tagline">Say what's wrong in your own words. OneTap turns it into a <em>verified</em>, ordered fix, and every setting is <em>one tap</em> away.</div>
+  <div class="headline">
+    <div class="kicker">Smart Guided Troubleshooting Engine</div>
+    <div class="tagline">Say what's wrong in your own words. OneTap turns it into a <em>verified</em>, ordered fix, and every setting is <em>one tap</em> away.</div>
+  </div>
   <div class="hdr-right">
-    <span class="stamp">Theme 02 · PRISM 2026</span>
-    <button class="iconbtn" id="devbtn" title="Run one-tap actions on a real phone (wireless debugging)" aria-label="Live phone" style="width:auto;padding:0 12px;font:600 12px var(--sans)"><span id="devdot" class="devdot"></span>Phone</button>
-    <button class="iconbtn" id="audbtn"title="Let the audience use OneTap on their phones" aria-label="Audience mode" style="width:auto;padding:0 12px;font:600 12px var(--sans)">📱 Audience</button>
-    <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+    <button class="pill" id="devbtn" title="Run one-tap actions on a real phone (wireless debugging)" aria-label="Live phone"><span id="devdot" class="devdot"></span><span id="devname">Connect phone</span></button>
+    <button class="pill" id="audbtn" title="Let the audience use OneTap on their phones" aria-label="Audience mode">Audience link</button>
+    <button class="pill sq" id="keysbtn" title="Presenter shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+    <button class="pill sq" id="theme" title="Toggle light / dark (D)" aria-label="Toggle theme">◐</button>
   </div>
 </header>
-
-<section class="how" aria-label="How OneTap works">
-  <div class="how-inner" id="how">
-    <div class="how-step" data-k="understand"><div class="n">01 · UNDERSTAND</div><h4>Normalise the complaint</h4><p>Fix typos and Hinglish, and pick out the symptom, the part and when it happens.</p></div>
-    <div class="how-step" data-k="cache"><div class="n">02 · REMEMBER</div><h4>Semantic cache + guard</h4><p>Seen this problem before? Serve the verified plan in milliseconds, but only if it's truly the same problem.</p></div>
-    <div class="how-step" data-k="extract"><div class="n">03 · READ</div><h4>Grounded extraction</h4><p>The AI reads the support article and must cite a sentence for every step. With no article, it may only suggest real Settings from the catalog.</p></div>
-    <div class="how-step" data-k="map"><div class="n">04 · CONNECT</div><h4>Deeplink resolution</h4><p>Each Settings action is matched to the exact catalog screen. The AI picks from a list and never invents a link.</p></div>
-    <div class="how-step" data-k="check"><div class="n">05 · CHECK</div><h4>Rules + ordering</h4><p>Format rules are enforced in code, and safe fixes come first while restarts and resets come last.</p></div>
-    <div class="how-step" data-k="learn"><div class="n">06 · LEARN</div><h4>Feedback heals the cache</h4><p>👍 / 👎 on every plan. Plans that don't help are evicted and rebuilt from the source next time.</p></div>
-  </div>
-</section>
 
 <section class="impact" aria-label="Live impact">
   <div class="impact-inner">
@@ -437,9 +464,9 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
   </div>
 </section>
 
-<section class="scen" aria-label="Try a scenario">
-  <div class="scen-head"><h2>Try a scenario</h2><p>Each card shows off one part of the engine. Click to run it on the phone.</p>
-    <div class="scen-nav"><button id="sprev" aria-label="Scroll left">‹</button><button id="snext" aria-label="Scroll right">›</button></div></div>
+<section class="scen" aria-label="Demo flow">
+  <div class="scen-head"><h2>Demo flow</h2><p>Each card shows one part of the engine. Click it, or press its number key.</p>
+    <div class="scen-nav"><span class="sprog" id="sprog2">0 / 10 shown</span><button id="sreset" type="button">reset ticks</button></div></div>
   <div class="scen-row" id="scen"></div>
 </section>
 
@@ -477,7 +504,15 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
             <button class="go" id="go">Fix it <span class="arrow">→</span></button>
           </div>
         </div>
-        <div id="thread" aria-live="polite"></div>
+        <div id="thread" aria-live="polite">
+          <div class="starter">
+            <div class="st-h">Try saying</div>
+            <button class="st-q" data-q="my phone screen keeps blinking and goes black when I unfold it">“my screen keeps blinking and goes black when I unfold it”</button>
+            <button class="st-q" data-q="touch stopped working properly after I put on a new screen protector">“touch stopped working after a new screen protector”</button>
+            <button class="st-q" data-q="phone screen bahut flicker kar raha hai aur black ho jata hai">“screen bahut flicker kar raha hai” <span class="st-tag">Hinglish</span></button>
+            <div class="st-mic">🎤 Or tap the mic and speak in Hindi, Kannada, Tamil, Telugu… any of 22 Indian languages.</div>
+          </div>
+        </div>
       </div>
 
       <div class="settings" id="settings" aria-hidden="true">
@@ -499,6 +534,18 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
 
   <!-- ======================= INSTRUMENT PANEL ======================= -->
   <section class="panel" aria-label="Behind the scenes">
+    <div class="how" aria-label="How OneTap works"><div class="how-inner" id="how">
+      <div class="how-step" data-k="understand"><div class="n">01 · UNDERSTAND</div><h4>Normalise</h4><p>Typos, Hinglish, 22 languages → one clear complaint.</p></div>
+      <div class="how-step" data-k="cache"><div class="n">02 · REMEMBER</div><h4>Cache + guard</h4><p>Same problem seen before? Verified plan in ms.</p></div>
+      <div class="how-step" data-k="extract"><div class="n">03 · READ</div><h4>Grounded AI</h4><p>Every step cites a sentence of the article.</p></div>
+      <div class="how-step" data-k="map"><div class="n">04 · CONNECT</div><h4>Deeplinks</h4><p>Exact Settings screen, picked from the catalog.</p></div>
+      <div class="how-step" data-k="check"><div class="n">05 · CHECK</div><h4>Rules + order</h4><p>Format enforced in code; risky fixes last.</p></div>
+      <div class="how-step" data-k="learn"><div class="n">06 · LEARN</div><h4>Feedback</h4><p>👎 evicts a plan; it is rebuilt next time.</p></div>
+    </div></div>
+    <div class="realphone" id="realphone">
+      <h5><span class="devdot on"></span><span id="rpname">Real phone</span> <span class="rpsub">every ⚡ tap runs on the device and is read back</span></h5>
+      <div id="rplog"><span class="empty">Tap a ⚡ one-tap button: the change shows up here once the phone confirms it.</span></div>
+    </div>
     <p class="narr" id="narr"><span class="ph">Ask something on the phone. This panel explains, step by step, what the engine did to answer, and why.</span></p>
     <div class="kpis">
       <div class="kpi"><div class="v" id="k-lat">–</div><div class="l">server latency</div></div>
@@ -597,6 +644,22 @@ body.aud .toggles label:not(:has(#catfb)){display:none}
   <div class="qrnote" style="margin:12px 0 4px">Already paired? Enter the IP address &amp; port from the main Wireless debugging screen:</div>
   <div class="devform" style="grid-template-columns:1fr auto"><input id="devconn" placeholder="192.168.1.5:41235" inputmode="url"><button id="devconnbtn">Connect</button></div>
 </div></div>
+<div class="modal" id="mkeys" role="dialog" aria-label="Presenter shortcuts"><div class="mbox" style="max-width:440px">
+  <button class="mclose" data-close="mkeys" aria-label="Close">✕</button>
+  <h3>Presenter shortcuts</h3>
+  <div class="sub">Work anywhere on the page except while typing.</div>
+  <div class="keys">
+    <span><kbd>1</kbd>–<kbd>9</kbd>, <kbd>0</kbd></span><span>run demo card 1–10</span>
+    <kbd>/</kbd><span>type a new complaint</span>
+    <kbd>M</kbd><span>voice input</span>
+    <kbd>G</kbd><span>guide me step by step</span>
+    <kbd>P</kbd><span>connect the real phone</span>
+    <kbd>A</kbd><span>audience link + QR</span>
+    <kbd>S</kbd><span>scale test</span>
+    <kbd>D</kbd><span>light / dark</span>
+    <kbd>Esc</kbd><span>close any window</span>
+  </div>
+</div></div>
 <div class="toast" id="toast" role="status"></div>
 <canvas id="confetti"></canvas>
 <script src="/static/qrcode.min.js"></script>
@@ -645,13 +708,13 @@ Restart your phone: Press and hold the Side button, then tap Restart.
 If the problem continues, contact customer support or visit a service center.`;
 const SCEN = [
   {tag:"cache hit", c:"t-hit", t:"Instant answer", q:"my screen went black after a month and it won't even turn on", shows:"Reworded known problem → served from cache in ms, $0", src:"auto"},
-  {tag:"one-tap toggle", c:"t-ai", t:"Enable the right switch", q:"touch stopped working properly after I put on a new screen protector", shows:"Grounded plan + Touch sensitivity ON + validation", src:"sample", row:"row_21"},
-  {tag:"direction", c:"t-ai", t:"…or the opposite one", q:"my screen registers touches I didn't make and I don't use any screen guard", shows:"Same article, different complaint → the OFF twin", src:"sample", row:"row_21"},
+  {tag:"one-tap toggle", c:"t-ai", t:"Enable the right switch", q:"touch stopped working properly after I put on a new screen protector", shows:"Grounded plan + Touch sensitivity ON + validation", src:"sample", row:"row_21", live:true},
+  {tag:"direction", c:"t-ai", t:"…or the opposite one", q:"my screen registers touches I didn't make and I don't use any screen guard", shows:"Same article, different complaint → the OFF twin", src:"sample", row:"row_21", live:true},
   {tag:"guard", c:"t-guard", t:"Look-alike, different fix", q:"My tablet screen flashes and then goes blank whenever I scroll a web page in the browser", shows:"0.88 similar to a cached Gmail case, but a different context → guard rejects it", src:"auto"},
   {tag:"multi-intent", c:"t-ai", t:"Three problems, one message", q:"My Nexa Fold X1 screen is cracked again right where it folds. The touch doesn't work on certain parts of the screen. I can hardly see anything on the display.", shows:"Split into separate goals, duplicates merged", src:"sample", row:"row_19"},
   {tag:"hinglish", c:"t-hit", t:"Speaks your language", q:"phone screen bahut flicker kar raha hai aur black ho jata hai", shows:"Typos + Hinglish normalised before matching", src:"auto"},
-  {tag:"catalog", c:"t-cat", t:"No article? Real Settings only", q:"my battery drains really fast even overnight", shows:"Plan built only from the official Settings catalog", src:"auto"},
-  {tag:"paste article", c:"t-cat", t:"Bring your own help page", q:"battery dies super fast even when I'm not using the phone", shows:"Any pasted article becomes a grounded plan", src:"paste", article:BATTERY_ARTICLE},
+  {tag:"catalog", c:"t-cat", t:"No article? Real Settings only", q:"my battery drains really fast even overnight", shows:"Plan built only from the official Settings catalog", src:"auto", live:true},
+  {tag:"paste article", c:"t-cat", t:"Bring your own help page", q:"battery dies super fast even when I'm not using the phone", shows:"Any pasted article becomes a grounded plan", src:"paste", article:BATTERY_ARTICLE, live:true},
   {tag:"no match", c:"t-no", t:"Refuses to guess", q:"my battery drains really fast", shows:"Article doesn't cover it → honest no_match", src:"sample", row:"row_21", nocat:true},
   {tag:"out of scope", c:"t-no", t:"Not a phone problem", q:"my car won't start in the morning", shows:"Nothing relevant anywhere → no_siis_context", src:"auto"},
 ];
@@ -668,22 +731,33 @@ function articleIndexFor(rowId){
   const r = examples.find(x => x.id === rowId); if (!r) return -1;
   return examples.findIndex(x => x.siis_response.title === r.siis_response.title);
 }
+let DONE = new Set();
+try { DONE = new Set(JSON.parse(localStorage.getItem("onetap.done") || "[]")); } catch (e) {}
+function markDone(i){
+  if (i != null) DONE.add(i);
+  try { localStorage.setItem("onetap.done", JSON.stringify([...DONE])); } catch (e) {}
+  document.querySelectorAll(".scard").forEach((c, j) => c.classList.toggle("done", DONE.has(j)));
+  $("sprog2").textContent = `${DONE.size} / ${SCEN.length} shown`;
+}
+async function runScenario(i){
+  const sc = SCEN[i], b = document.querySelectorAll(".scard")[i]; if (!sc) return;
+  document.querySelectorAll(".scard").forEach(x => x.classList.remove("running")); b.classList.add("running");
+  $("q").value = sc.q; setSrc(sc.src);
+  if (sc.src === "sample") { const ix = articleIndexFor(sc.row); if (ix >= 0) $("article").value = ix; }
+  if (sc.src === "paste") { $("pasted").value = sc.article; countWords(); }
+  setCheck("catfb", !sc.nocat);
+  document.querySelector(".phone-wrap").scrollIntoView({behavior:"smooth", block:"start"});
+  await run(); b.classList.remove("running"); markDone(i);
+}
 SCEN.forEach((sc, i) => {
   const b = document.createElement("button"); b.className = "scard"; b.style.setProperty("--i", i);
-  b.innerHTML = `<span class="tag ${sc.c}">${esc(sc.tag)}</span><b>${esc(sc.t)}</b><q>${esc(sc.q)}</q><div class="shows">${esc(sc.shows)}</div>`;
-  b.onclick = async () => {
-    document.querySelectorAll(".scard").forEach(x => x.classList.remove("running")); b.classList.add("running");
-    $("q").value = sc.q; setSrc(sc.src);
-    if (sc.src === "sample") { const ix = articleIndexFor(sc.row); if (ix >= 0) $("article").value = ix; }
-    if (sc.src === "paste") { $("pasted").value = sc.article; countWords(); }
-    setCheck("catfb", !sc.nocat);
-    document.querySelector(".phone-wrap").scrollIntoView({behavior:"smooth", block:"start"});
-    await run(); b.classList.remove("running");
-  };
+  b.innerHTML = `<span class="key"><span>${(i + 1) % 10}</span></span><div class="tagrow"><span class="tag ${sc.c}">${esc(sc.tag)}</span>${sc.live ? `<span class="live" title="Changes a setting on the connected phone">● LIVE</span>` : ""}</div><b>${esc(sc.t)}</b><q>${esc(sc.q)}</q><div class="shows">${esc(sc.shows)}</div>`;
+  b.onclick = () => runScenario(i);
   $("scen").appendChild(b);
 });
-$("sprev").onclick = () => $("scen").scrollBy({left:-500, behavior:"smooth"});
-$("snext").onclick = () => $("scen").scrollBy({left:500, behavior:"smooth"});
+markDone();
+$("sreset").onclick = () => { DONE.clear(); markDone(); };
+document.querySelectorAll(".st-q").forEach(b => b.onclick = () => { $("q").value = b.dataset.q; setSrc("auto"); run(); });
 function setCheck(id, v){ const i=$(id); i.checked=v; i.parentElement.classList.toggle("on", v); }
 function setSrc(s){ document.querySelector(`.src-tabs [data-src="${s}"]`).click(); }
 
@@ -1107,6 +1181,10 @@ let DEV = {connected: false};
 function showDevice(d){
   DEV = d || {connected: false};
   $("devdot").classList.toggle("on", !!DEV.connected);
+  $("devbtn").classList.toggle("live", !!DEV.connected);
+  $("devname").textContent = DEV.connected ? `${DEV.brand} ${DEV.model}` : "Connect phone";
+  $("realphone").classList.toggle("on", !!DEV.connected);
+  if (DEV.connected) $("rpname").textContent = `${DEV.brand} ${DEV.model}`;
   $("devbtn").title = DEV.connected ? `Live phone: ${DEV.brand} ${DEV.model}` : "Run one-tap actions on a real phone (wireless debugging)";
   $("devstate").innerHTML = DEV.connected
     ? `<span class="devdot on"></span><b>${esc(DEV.brand)} ${esc(DEV.model)}</b> · Android ${esc(DEV.android)} · connected. Every ⚡ one-tap now runs on this phone.`
@@ -1127,8 +1205,20 @@ async function applyOnPhone(x){
     const r = await fetch("/v1/device/apply", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({actionName: x.a.actionName, steps: sg.steps, deeplink: {message: x.dl.message, description: x.dl.description, originalType: x.dl.originalType}})});
     const d = await r.json(); if (!r.ok) throw new Error(d.detail || r.status);
-    toast(`📱 ${DEV.model}: ${d.changed ? `${d.label} turned ${d.state}` : `opened ${d.label}`}`);
+    const res = d.changed ? `${d.label} ${String(d.state).toUpperCase()}` : d.note ? `${d.label}: not changed` : `opened ${d.label}`;
+    toast(`📱 ${DEV.model}: ${d.changed ? res + " ✓" : res}`);
+    logPhone(x.a.actionName, d);
   } catch (e) { toast("📱 Phone: " + (e.message || e)); refreshDevice(); }
+}
+function logPhone(name, d){
+  const log = $("rplog"); log.querySelector(".empty")?.remove();
+  const t = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+  const [cls, res] = d.changed ? ["ok", `${String(d.state).toUpperCase()} ✓ verified`] : d.note ? ["no", "NOT CHANGED"] : ["open", "SCREEN OPENED"];
+  const why = d.changed ? (d.keys || []).join(", ") : (d.note || "no switch for this action; opened the screen");
+  const row = document.createElement("div"); row.className = "rprow";
+  row.innerHTML = `<span class="t">${t}</span><span>${esc(d.label)} <small>${esc(name)} · ${esc(why)}</small></span><span class="r ${cls}">${res}</span>`;
+  log.prepend(row);
+  while (log.children.length > 4) log.lastChild.remove();
 }
 $("devbtn").onclick = () => { $("mdev").classList.add("open"); refreshDevice(); };
 $("devpairbtn").onclick = () => pairDevice($("devpair").value, $("devcode").value);
@@ -1208,6 +1298,24 @@ function hl(s){
   return esc(s).replace(/(&quot;[^&]*?&quot;)(\s*:)?|\b(true|false|null)\b|-?\b\d+(\.\d+)?\b/g, (m0, str, colon, b) =>
     str ? (colon ? `<span class="k">${str}</span>${colon}` : `<span class="s">${str}</span>`) : b ? `<span class="b">${m0}</span>` : `<span class="n">${m0}</span>`);
 }
+
+/* ---------- presenter shortcuts ---------- */
+$("keysbtn").onclick = () => $("mkeys").classList.add("open");
+document.addEventListener("keydown", e => {
+  if (AUD || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Escape") { document.querySelectorAll(".modal.open").forEach(m => m.querySelector("[data-close]").click()); return; }
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (/^[0-9]$/.test(k)) { e.preventDefault(); runScenario((+k + 9) % 10); }
+  else if (k === "/") { e.preventDefault(); $("q").focus(); $("q").select(); }
+  else if (k === "m") $("mic").click();
+  else if (k === "g") document.querySelector(".guidebtn")?.click();
+  else if (k === "p") $("devbtn").click();
+  else if (k === "a") $("audbtn").click();
+  else if (k === "s") $("scalebtn").click();
+  else if (k === "d") $("theme").click();
+  else if (k === "?") $("keysbtn").click();
+});
 </script>
 </body>
 </html>

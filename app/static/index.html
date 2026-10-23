@@ -854,7 +854,10 @@ function logRow(job, kind, html, tms, id){
 
 function onStage(job, ev, d){
   const t = d.t_ms;
-  if (ev === "translated" && d.translated_query) logRow(job, "", `Translated from <b>${esc(d.language_name)}</b>: “${esc(d.translated_query)}”`, t);
+  if (ev === "translated" && d.translated_query) {
+    logRow(job, "", `Translated from <b>${esc(d.language_name)}</b>: “${esc(d.translated_query)}”`, t);
+    if (!job.lang && d.input_language) job.lang = d.input_language;   // typed Indian-language complaint: offer the answer back in it
+  }
   if (ev === "cache") {
     const rej = (d.guard_rejected || [])[0];
     if (d.hit) logRow(job, "", `<b>Memory hit</b>: same problem solved before (similarity ${(+d.similarity||1).toFixed(2)}${d.match === "exact" ? ", exact wording" : ""}), so no AI call needed`, t, "p-cache");

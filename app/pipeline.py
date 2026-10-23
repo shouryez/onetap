@@ -269,7 +269,8 @@ async def troubleshoot(query: str, siis_response=None, *, use_cache: bool = True
         meta["source"] = source
         meta["rerouted_to"] = siis_text.split("\n", 1)[0][:120]
     out = {"query": query, "query_variations": variations, "response": response, "meta": meta}
-    if write_cache and fallback != "no_siis_context":
+    # an empty plan is never remembered: one unlucky run would otherwise answer "no match" to every look-alike
+    if write_cache and fallback != "no_siis_context" and contexts:
         meta["plan_id"] = get_cache().put(query, variations, response, siis_to_text(siis_response), meta,
                                           aliases=_aliases(enrich_res))
         _grow_cloud(meta["plan_id"], query)

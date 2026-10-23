@@ -22,7 +22,8 @@ Rules for query_variations (exactly 10):
 EXTRA_SYS = """Write 10 MORE ways real Indian users would type or SAY this same phone complaint. Same problem, same
 on/off direction and context; never add symptoms. Styles: 2 very short (3-6 words), 2 Hinglish in Latin script
 (e.g. "screen baar baar black ho jaati hai"), 2 Indian-English phrasing, 2 like a voice transcript (no punctuation,
-filler words), 2 naming only the main symptom in different words (blinking / flashing / going dark...).
+filler words), 2 naming only the main symptom in different words. Every variation must describe the SAME
+symptom as the complaint: never switch to a different symptom (e.g. ghost touches must not become flicker).
 Return ONLY JSON {"variations": ["...", ...]}"""
 
 

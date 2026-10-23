@@ -94,13 +94,25 @@ class SemanticCache:
         self._index(entry)
         return eid
 
+    @staticmethod
+    def alias_fits(e: dict, alias: str) -> bool:
+        """A rewording may only name symptoms the complaint itself (or its enrichment rewordings) named, and keep
+        its on/off direction: a drifted 'screen flickers' must never be stored under a ghost-touch plan."""
+        sig = signature(normalise(alias))
+        base = [signature(normalise(x)) for x in [e["query"], *e.get("query_variations", [])]]
+        allowed = set().union(*(set(b["symptoms"]) for b in base))
+        if sig["symptoms"] and not set(sig["symptoms"]) <= allowed:
+            return False
+        pols = {b["polarity"] for b in base if b["polarity"]}
+        return not (sig["polarity"] and pols and sig["polarity"] not in pols)
+
     def add_aliases(self, eid: str, aliases: list[str]) -> int:
         """Grow an entry's paraphrase cloud after the fact (background enrichment)."""
         e = self.entries.get(eid)
         if not e:
             return 0
         have = {normalise(x) for x in [e["query"], *e.get("query_variations", []), *e.get("aliases", [])]}
-        new = [a for a in aliases if a and normalise(a) and normalise(a) not in have]
+        new = [a for a in aliases if a and normalise(a) and normalise(a) not in have and self.alias_fits(e, a)]
         if not new:
             return 0
         norms = list(dict.fromkeys(normalise(a) for a in new))
@@ -156,7 +168,7 @@ class SemanticCache:
         sh = siis_hash(siis_text)
         info = {"normalised": n, "signature": signature(n)}
         eid = self.exact.get(n + "|" + str(sh)) if sh else self.exact.get(n + "|*")
-        if eid:
+        if eid and self.entries[eid]["response"]["contexts"]:
             self.stats["hits"] += 1
             info.update(match="exact", similarity=1.0)
             return self.entries[eid], info
@@ -173,6 +185,8 @@ class SemanticCache:
             if s < self.tau_low:
                 break
             e = self.entries[self.keys[r]]
+            if not e["response"]["contexts"]:
+                continue  # legacy empty ("no match") entries are never served
             if sh and e.get("siis_hash") != sh:
                 continue  # request brings an article: only plans built from THAT article may be served
             if self.guard_enabled:
